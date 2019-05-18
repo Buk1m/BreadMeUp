@@ -1,3 +1,5 @@
 language: java
 sudo: false
 install: mvn clean install -Pintegration-test
+jdk:
+  - openjdk11
