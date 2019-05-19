@@ -1,10 +1,10 @@
 package com.pkkl.BreadMeUp.model;
 
 import lombok.Data;
+import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
-import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
 import java.util.Set;
 
@@ -15,26 +15,25 @@ import java.util.Set;
 public class User {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
     private int id;
 
     @Column(name = "login", unique = true)
-    @NotBlank(message = "Login cannot be empty")
+    @Length(min = 3, max = 64, message = "Login length should be from 3 to 64")
     private String login;
 
     @Column(name = "password", unique = true)
-    @NotBlank(message = "Password cannot be empty")
+    @Length(min = 8, max = 64, message = "Password length should be from 8 to 64")
     private String password;
 
     @Column(name = "email", unique = true)
     @Email(message = "Email is not valid")
-    @NotBlank(message = "Email cannot be empty")
+    @Length(max = 64, message = "Email length should be to 64")
     private String email;
 
     @Column(name = "phone", unique = true)
-    @Pattern(regexp = "\\d{9}", message = "Phone is not valid")
-    @NotBlank(message = "Phone cannot be empty")
+    @Pattern(regexp = "\\d{7,15}", message = "Phone is not valid")
     private String phone;
 
     @ManyToMany(cascade = CascadeType.ALL)
