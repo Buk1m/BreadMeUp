@@ -20,7 +20,7 @@ class UserServiceIntegrationTest extends Specification {
     @Autowired
     DataSource dataSource
 
-    def "Test user registration"() {
+    def "Should register user and return saved object"() {
         given:
         Sql sql = new Sql(dataSource)
         User user = User.builder()
@@ -41,7 +41,7 @@ class UserServiceIntegrationTest extends Specification {
         registeredUser.getRoles().stream().map({ r -> r.getName() }).toArray() == ["ROLE_USER"]
     }
 
-    def "Test invalid user data"() {
+    def "Should throw ConstraintException when user data is empty/invalid"() {
         given:
         User user = User.builder()
                 .build()
@@ -51,7 +51,7 @@ class UserServiceIntegrationTest extends Specification {
         final ConstraintException exception = thrown()
     }
 
-    def "Test user registration twice"() {
+    def "Should throw ConstraintException when the same user registers twice"() {
         given:
         User user = User.builder()
                 .login("login")
