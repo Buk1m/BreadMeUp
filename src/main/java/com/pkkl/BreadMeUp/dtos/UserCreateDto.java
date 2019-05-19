@@ -11,7 +11,7 @@ import javax.validation.constraints.Pattern;
 @Data
 @AllArgsConstructor
 @Builder
-public class UserInputDto {
+public class UserCreateDto {
 
     @Length(min = 3, max = 64, message = "Login length should be from 3 to 64")
     private String login;
