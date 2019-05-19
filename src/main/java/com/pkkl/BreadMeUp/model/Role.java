@@ -19,4 +19,8 @@ public class Role {
     @Column(name = "name", unique = true)
     @Length(min = 3, max = 20, message = "Name length should be from 3 to 20")
     private String name;
+
+    @Version
+    @Column(name = "version")
+    private long version;
 }
