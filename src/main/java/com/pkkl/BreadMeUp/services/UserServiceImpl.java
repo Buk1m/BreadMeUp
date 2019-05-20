@@ -8,7 +8,9 @@ import com.pkkl.BreadMeUp.repositories.RoleRepository;
 import com.pkkl.BreadMeUp.repositories.UserRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.ConstraintViolationException;
@@ -37,8 +39,10 @@ public class UserServiceImpl implements UserService {
                     .orElseThrow(() -> new RuntimeException("Role does not exists"));
             user.setRoles(Set.of(role));
             return this.userRepository.save(user);
+        } catch (InvalidDataAccessApiUsageException e) {
+            throw new ConstraintException("User already exists", e);
         } catch (ConstraintViolationException e) {
-            throw new ConstraintException(e.getMessage(), e);
+            throw new ConstraintException(e.getConstraintViolations().toString(), e);
         } catch (Exception e) {
             if (e.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
                 throw new ConstraintException(e.getMessage(), e);
