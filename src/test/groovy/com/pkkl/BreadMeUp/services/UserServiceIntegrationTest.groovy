@@ -12,6 +12,8 @@ import javax.sql.DataSource
 
 @SpringBootTest
 @ActiveProfiles("test")
+@org.springframework.test.context.jdbc.Sql(scripts = "/clear.sql",
+        executionPhase = org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class UserServiceIntegrationTest extends Specification {
 
     @Autowired
@@ -31,8 +33,8 @@ class UserServiceIntegrationTest extends Specification {
         when:
         User registeredUser = this.userService.register(user)
         then:
-        sql.rows('select users.user_id, login, password, email, phone, name from users inner join users_roles on users.user_id = users_roles.user_id inner join roles on users_roles.role_id = roles.role_id') ==
-                [[USER_ID: 1, LOGIN: "login", PASSWORD: "password", EMAIL: "email@email.email", PHONE: "123456789", NAME: "ROLE_USER"]]
+        sql.rows('select login, password, email, phone, name from users inner join users_roles on users.user_id = users_roles.user_id inner join roles on users_roles.role_id = roles.role_id') ==
+                [[LOGIN: "login", PASSWORD: "password", EMAIL: "email@email.email", PHONE: "123456789", NAME: "ROLE_USER"]]
 
         registeredUser.login == "login"
         registeredUser.password == "password"
@@ -43,16 +45,19 @@ class UserServiceIntegrationTest extends Specification {
 
     def "Should throw ConstraintException when user data is empty/invalid"() {
         given:
+        Sql sql = new Sql(dataSource)
         User user = User.builder()
                 .build()
         when:
         this.userService.register(user)
         then:
         final ConstraintException exception = thrown()
+        sql.rows('select count(*) from users').get(0).getProperty('COUNT(*)') == 0
     }
 
     def "Should throw ConstraintException when the same user registers twice"() {
         given:
+        Sql sql = new Sql(dataSource)
         User user = User.builder()
                 .login("login")
                 .password("password")
@@ -60,8 +65,11 @@ class UserServiceIntegrationTest extends Specification {
                 .phone("123456789").build()
         when:
         this.userService.register(user)
+        user.setId(null)
         this.userService.register(user)
         then:
         final ConstraintException exception = thrown()
+        sql.rows('select login, password, email, phone, name from users inner join users_roles on users.user_id = users_roles.user_id inner join roles on users_roles.role_id = roles.role_id') ==
+                [[LOGIN: "login", PASSWORD: "password", EMAIL: "email@email.email", PHONE: "123456789", NAME: "ROLE_USER"]]
     }
 }

@@ -5,6 +5,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
+import org.springframework.data.domain.Persistable;
 
 import javax.persistence.*;
 import javax.validation.constraints.Email;
@@ -19,12 +20,12 @@ import java.util.Set;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements Persistable<Integer> {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "user_id")
-    private int id;
+    private Integer id;
 
     @Column(name = "login", unique = true)
     @Length(min = 3, max = 64, message = "Login length should be from 3 to 64")
@@ -54,4 +55,12 @@ public class User {
     @Version
     @Column(name = "version")
     private long version;
+
+    @Transient
+    private boolean update;
+
+    @Override
+    public boolean isNew() {
+        return !this.update;
+    }
 }
