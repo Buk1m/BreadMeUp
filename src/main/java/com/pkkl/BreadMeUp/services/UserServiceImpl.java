@@ -6,11 +6,13 @@ import com.pkkl.BreadMeUp.model.Role;
 import com.pkkl.BreadMeUp.model.User;
 import com.pkkl.BreadMeUp.repositories.RoleRepository;
 import com.pkkl.BreadMeUp.repositories.UserRepository;
+import com.pkkl.BreadMeUp.security.AuthUserDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.ConstraintViolationException;
@@ -48,6 +50,17 @@ public class UserServiceImpl implements UserService {
                 throw new ConstraintException(e.getMessage(), e);
             }
             throw new DatabaseException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        try {
+            User user = this.userRepository.findByLogin(username)
+                    .orElseThrow(RuntimeException::new);
+            return new AuthUserDetails(user);
+        } catch (Exception e) {
+            throw new UsernameNotFoundException("User not exists with login=" + username);
         }
     }
 }
