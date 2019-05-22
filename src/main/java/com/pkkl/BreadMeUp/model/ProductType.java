@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 
 @Data
 @AllArgsConstructor
@@ -25,6 +26,7 @@ public class ProductType {
     private UnitOfMeasurement unitOfMeasurement;
 
     @Column(name = "size", precision = 6, scale = 3)
+    @Min(0)
     private double size;
 
     @Version

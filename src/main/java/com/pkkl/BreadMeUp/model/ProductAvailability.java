@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import java.time.LocalDate;
 
 @Data
@@ -25,9 +26,11 @@ public class ProductAvailability {
     private LocalDate date;
 
     @Column(name = "ordered_number")
+    @Min(0)
     private int orderedNumber;
 
     @Column(name = "product_limit")
+    @Min(0)
     private int limit;
 
     @Version

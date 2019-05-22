@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
+import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import java.util.Set;
 
@@ -23,15 +24,17 @@ public class Product {
     @Column(name = "product_id")
     private int id;
 
-    @NotBlank
+    @NotBlank(message = "Name cannot be blank")
     @Length(min = 3, max = 64, message = "Name length should be from 3 to 64")
     @Column(name = "name")
     private String name;
 
     @Column(name = "price", precision = 5, scale = 2)
+    @Min(0)
     private double price;
 
     @Column(name = "product_limit")
+    @Min(0)
     private int limit;
 
     @Column(name = "active")
