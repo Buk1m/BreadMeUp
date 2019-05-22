@@ -1,6 +1,7 @@
 package com.pkkl.BreadMeUp.handlers;
 
 import com.pkkl.BreadMeUp.exceptions.ConstraintException;
+import com.pkkl.BreadMeUp.exceptions.DatabaseException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -36,11 +37,20 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(ConstraintException.class)
     public ResponseEntity<Object> handleDataConflict(ConstraintException ex) {
+        return this.getObjectResponseEntity(ex, HttpStatus.CONFLICT);
+    }
+
+    @ExceptionHandler(DatabaseException.class)
+    public ResponseEntity<Object> handleDatabaseException(DatabaseException ex) {
+        return this.getObjectResponseEntity(ex, HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private ResponseEntity<Object> getObjectResponseEntity(DatabaseException ex, HttpStatus httpStatus) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", new Date());
-        body.put("status", HttpStatus.CONFLICT);
+        body.put("status", httpStatus);
         body.put("error", ex.getMessage());
 
-        return new ResponseEntity<>(body, HttpStatus.CONFLICT);
+        return new ResponseEntity<>(body, httpStatus);
     }
 }
