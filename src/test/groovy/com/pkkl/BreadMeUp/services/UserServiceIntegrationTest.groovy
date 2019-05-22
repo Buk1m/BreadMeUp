@@ -33,11 +33,10 @@ class UserServiceIntegrationTest extends Specification {
         when:
         User registeredUser = this.userService.register(user)
         then:
-        sql.rows('select login, password, email, phone, name from users inner join users_roles on users.user_id = users_roles.user_id inner join roles on users_roles.role_id = roles.role_id') ==
-                [[LOGIN: "login", PASSWORD: "password", EMAIL: "email@email.email", PHONE: "123456789", NAME: "ROLE_USER"]]
+        sql.rows('select login, email, phone, name from users inner join users_roles on users.user_id = users_roles.user_id inner join roles on users_roles.role_id = roles.role_id') ==
+                [[LOGIN: "login", EMAIL: "email@email.email", PHONE: "123456789", NAME: "ROLE_USER"]]
 
         registeredUser.login == "login"
-        registeredUser.password == "password"
         registeredUser.email == "email@email.email"
         registeredUser.phone == "123456789"
         registeredUser.getRoles().stream().map({ r -> r.getName() }).toArray() == ["ROLE_USER"]
@@ -47,6 +46,7 @@ class UserServiceIntegrationTest extends Specification {
         given:
         Sql sql = new Sql(dataSource)
         User user = User.builder()
+                .password("password")
                 .build()
         when:
         this.userService.register(user)
@@ -69,7 +69,7 @@ class UserServiceIntegrationTest extends Specification {
         this.userService.register(user)
         then:
         thrown(ConstraintException)
-        sql.rows('select login, password, email, phone, name from users inner join users_roles on users.user_id = users_roles.user_id inner join roles on users_roles.role_id = roles.role_id') ==
-                [[LOGIN: "login", PASSWORD: "password", EMAIL: "email@email.email", PHONE: "123456789", NAME: "ROLE_USER"]]
+        sql.rows('select login, email, phone, name from users inner join users_roles on users.user_id = users_roles.user_id inner join roles on users_roles.role_id = roles.role_id') ==
+                [[LOGIN: "login", EMAIL: "email@email.email", PHONE: "123456789", NAME: "ROLE_USER"]]
     }
 }

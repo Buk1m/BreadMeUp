@@ -12,10 +12,9 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 
-import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
@@ -27,10 +26,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtAuthSettings jwtAuthSettings;
 
+    private final PasswordEncoder passwordEncoder;
+
     @Autowired
-    public SecurityConfig(UserService userService, JwtAuthSettings jwtAuthSettings) {
+    public SecurityConfig(UserService userService, JwtAuthSettings jwtAuthSettings, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.jwtAuthSettings = jwtAuthSettings;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -63,7 +65,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Override
     protected void configure(AuthenticationManagerBuilder auth) throws Exception {
-        auth.userDetailsService(this.userService).passwordEncoder(NoOpPasswordEncoder.getInstance());
+        auth.userDetailsService(this.userService).passwordEncoder(this.passwordEncoder);
     }
 
     private AuthenticationEntryPoint configureAuthenticationEntryPoint() {

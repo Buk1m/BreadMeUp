@@ -5,6 +5,7 @@ import groovy.sql.Sql
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.http.MediaType
+import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.test.context.ActiveProfiles
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
@@ -33,6 +34,9 @@ class LoginIntegrationTest extends Specification {
     @Autowired
     private JwtAuthSettings jwtAuthSettings
 
+    @Autowired
+    private PasswordEncoder passwordEncoder
+
     private MockMvc mockMvc
 
     @Autowired
@@ -48,7 +52,8 @@ class LoginIntegrationTest extends Specification {
     def "Should return in authorization header token and 200 status code"() {
         given:
         Sql sql = new Sql(dataSource)
-        sql.execute("insert into users values(1, 'email@email.email', 'login', 'password', '123456789', 1)")
+        sql.execute("insert into users values(1, 'email@email.email', 'login', :password, '123456789', 1)",
+                [password:  passwordEncoder.encode("password")])
 
         def userId = sql.firstRow("select user_id from users").getProperty('user_id')
         def roleId = sql.firstRow("select role_id from roles").getProperty('role_id')
@@ -72,7 +77,8 @@ class LoginIntegrationTest extends Specification {
     def "Should return 401 status code"() {
         given:
         Sql sql = new Sql(dataSource)
-        sql.execute("insert into users values(1, 'email@email.email', 'login', 'password', '123456789', 1)")
+        sql.execute("insert into users values(1, 'email@email.email', 'login', :password, '123456789', 1)",
+                [password:  passwordEncoder.encode("password")])
         Map request = [
                 login   : 'incorrectLogin',
                 password: 'password'
