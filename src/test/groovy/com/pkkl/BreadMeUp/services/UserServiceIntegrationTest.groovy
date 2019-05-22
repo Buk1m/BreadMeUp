@@ -51,7 +51,7 @@ class UserServiceIntegrationTest extends Specification {
         when:
         this.userService.register(user)
         then:
-        final ConstraintException exception = thrown()
+        thrown(ConstraintException)
         sql.rows('select count(*) from users').get(0).getProperty('COUNT(*)') == 0
     }
 
@@ -68,7 +68,7 @@ class UserServiceIntegrationTest extends Specification {
         user.setId(null)
         this.userService.register(user)
         then:
-        final ConstraintException exception = thrown()
+        thrown(ConstraintException)
         sql.rows('select login, password, email, phone, name from users inner join users_roles on users.user_id = users_roles.user_id inner join roles on users_roles.role_id = roles.role_id') ==
                 [[LOGIN: "login", PASSWORD: "password", EMAIL: "email@email.email", PHONE: "123456789", NAME: "ROLE_USER"]]
     }
