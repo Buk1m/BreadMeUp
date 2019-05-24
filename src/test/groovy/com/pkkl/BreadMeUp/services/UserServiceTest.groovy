@@ -7,6 +7,8 @@ import com.pkkl.BreadMeUp.model.User
 import com.pkkl.BreadMeUp.repositories.RoleRepository
 import com.pkkl.BreadMeUp.repositories.UserRepository
 import org.springframework.dao.InvalidDataAccessApiUsageException
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
+import org.springframework.security.crypto.password.PasswordEncoder
 import spock.lang.Specification
 
 import javax.validation.ConstraintViolation
@@ -19,15 +21,19 @@ class UserServiceTest extends Specification {
 
     private RoleRepository roleRepositoryMock = Mock(RoleRepository.class)
 
+    private PasswordEncoder passwordEncoder = Spy(BCryptPasswordEncoder.class)
+
     private UserService userService
 
     def setup() {
-        this.userService = new UserServiceImpl(this.userRepositoryMock, this.roleRepositoryMock)
+        this.userService = new UserServiceImpl(this.userRepositoryMock, this.roleRepositoryMock, this.passwordEncoder)
     }
 
     def "Should return saved object when user has been successfully registered"() {
         given:
-        User user = Mock(User.class)
+        User user = User.builder()
+                .password("password")
+                .build()
         Role role = Mock(Role.class)
         and:
         roleRepositoryMock.findByName("ROLE_USER") >> Optional.of(role)
@@ -42,7 +48,9 @@ class UserServiceTest extends Specification {
 
     def "Should throw DatabaseException when role does not exist"() {
         given:
-        User user = Mock(User.class)
+        User user = User.builder()
+                .password("password")
+                .build()
         and:
         roleRepositoryMock.findByName("ROLE_USER") >> Optional.empty()
 
@@ -55,7 +63,9 @@ class UserServiceTest extends Specification {
 
     def "Should throw ConstraintException when repository throws InvalidDataAccessApiUsageException"() {
         given:
-        User user = Mock(User.class)
+        User user = User.builder()
+                .password("password")
+                .build()
         Role role = Mock(Role.class)
         and:
         roleRepositoryMock.findByName("ROLE_USER") >> Optional.of(role)
@@ -70,7 +80,9 @@ class UserServiceTest extends Specification {
 
     def "Should throw ConstraintException when repository throws ConstraintViolationException"() {
         given:
-        User user = Mock(User.class)
+        User user = User.builder()
+                .password("password")
+                .build()
         Role role = Mock(Role.class)
         and:
         roleRepositoryMock.findByName("ROLE_USER") >> Optional.of(role)
@@ -86,7 +98,9 @@ class UserServiceTest extends Specification {
 
     def "Should throw ConstraintException when repository throws exception caused by ConstraintViolationException"() {
         given:
-        User user = Mock(User.class)
+        User user = User.builder()
+                .password("password")
+                .build()
         Role role = Mock(Role.class)
         and:
         roleRepositoryMock.findByName("ROLE_USER") >> Optional.of(role)
