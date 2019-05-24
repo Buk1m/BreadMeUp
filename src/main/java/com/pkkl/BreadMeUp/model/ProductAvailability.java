@@ -22,7 +22,11 @@ public class ProductAvailability {
     @Column(name = "availability_id")
     private int id;
 
-    @Column(name = "day")
+    @ManyToOne
+    @JoinColumn(name = "product_id", nullable = false)
+    private Product product;
+
+    @Column(name = "day", nullable = false)
     private LocalDate date;
 
     @Column(name = "ordered_number")

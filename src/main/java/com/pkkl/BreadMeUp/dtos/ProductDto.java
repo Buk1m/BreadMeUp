@@ -8,6 +8,7 @@ import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Data
@@ -29,10 +30,13 @@ public class ProductDto {
 
     private boolean active;
 
+    @NotNull
     private BakeryDto bakery;
 
+    @NotNull
     private CategoryDto category;
 
+    @NotNull
     private ProductTypeDto productType;
 
     private Set<ProductAvailabilityDto> productAvailability;

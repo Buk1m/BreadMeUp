@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 import java.time.LocalDate;
 
 @Data
@@ -15,6 +16,10 @@ import java.time.LocalDate;
 public class ProductAvailabilityDto {
     private int id;
 
+    @NotNull
+    private ProductDto product;
+
+    @NotNull
     private LocalDate date;
 
     @Min(0)
