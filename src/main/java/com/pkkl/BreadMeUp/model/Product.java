@@ -40,17 +40,17 @@ public class Product {
     @Column(name = "active")
     private boolean active;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private Bakery bakery;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private Category category;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(cascade = CascadeType.ALL, optional = false)
     private ProductType productType;
 
-    @ManyToMany
-    @JoinTable(name = "product_availability", joinColumns = @JoinColumn(name = "product_id"), inverseJoinColumns = @JoinColumn(name = "product_availability_id"))
+    @OneToMany
+    @JoinColumn(name = "availability_id")
     private Set<ProductAvailability> productAvailability;
 
     @Version
