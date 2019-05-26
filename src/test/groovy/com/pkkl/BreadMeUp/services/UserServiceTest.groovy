@@ -1,5 +1,6 @@
 package com.pkkl.BreadMeUp.services
 
+
 import com.pkkl.BreadMeUp.exceptions.ConstraintException
 import com.pkkl.BreadMeUp.exceptions.DatabaseException
 import com.pkkl.BreadMeUp.model.Role
@@ -13,7 +14,6 @@ import spock.lang.Specification
 
 import javax.validation.ConstraintViolation
 import javax.validation.ConstraintViolationException
-
 
 class UserServiceTest extends Specification {
 
@@ -38,10 +38,8 @@ class UserServiceTest extends Specification {
         and:
         roleRepositoryMock.findByName("ROLE_USER") >> Optional.of(role)
         userRepositoryMock.save(user) >> user
-
         when:
         User returnedUser = this.userService.register(user)
-
         then:
         returnedUser == user
     }
@@ -53,12 +51,10 @@ class UserServiceTest extends Specification {
                 .build()
         and:
         roleRepositoryMock.findByName("ROLE_USER") >> Optional.empty()
-
         when:
         this.userService.register(user)
-
         then:
-        thrown(DatabaseException)
+        thrown(DatabaseException.class)
     }
 
     def "Should throw ConstraintException when repository throws InvalidDataAccessApiUsageException"() {
@@ -70,12 +66,10 @@ class UserServiceTest extends Specification {
         and:
         roleRepositoryMock.findByName("ROLE_USER") >> Optional.of(role)
         userRepositoryMock.save(_ as User) >> { u -> throw new InvalidDataAccessApiUsageException("Message") }
-
         when:
         this.userService.register(user)
-
         then:
-        thrown(ConstraintException)
+        thrown(ConstraintException.class)
     }
 
     def "Should throw ConstraintException when repository throws ConstraintViolationException"() {
@@ -88,12 +82,10 @@ class UserServiceTest extends Specification {
         roleRepositoryMock.findByName("ROLE_USER") >> Optional.of(role)
         userRepositoryMock.save(_ as User) >>
                 { u -> throw new ConstraintViolationException(new HashSet<ConstraintViolation<?>>()) }
-
         when:
         this.userService.register(user)
-
         then:
-        thrown(ConstraintException)
+        thrown(ConstraintException.class)
     }
 
     def "Should throw ConstraintException when repository throws exception caused by ConstraintViolationException"() {
@@ -106,11 +98,51 @@ class UserServiceTest extends Specification {
         roleRepositoryMock.findByName("ROLE_USER") >> Optional.of(role)
         userRepositoryMock.save(_ as User) >>
                 { u -> throw new RuntimeException(new org.hibernate.exception.ConstraintViolationException(null, null, null)) }
-
         when:
         this.userService.register(user)
-
         then:
-        thrown(ConstraintException)
+        thrown(ConstraintException.class)
+    }
+
+    def "Should not throw exception when block method from repository does not throw exception"() {
+        when:
+        this.userService.blockUser("login")
+        then:
+        1 * this.userRepositoryMock.setBlocked("login", true)
+        and:
+        notThrown(Exception.class)
+    }
+
+    def "Should throw DatabaseException when block method from repository throws exception"() {
+        given:
+        this.userRepositoryMock.setBlocked("login", true) >> {
+            ->
+            throw new RuntimeException()
+        }
+        when:
+        this.userService.blockUser("login")
+        then:
+        thrown(DatabaseException.class)
+    }
+
+    def "Should not throw exception when unblock method from repository does not throw exception"() {
+        when:
+        this.userService.unblockUser("login")
+        then:
+        1 * this.userRepositoryMock.setBlocked("login", false)
+        and:
+        notThrown(Exception.class)
+    }
+
+    def "Should throw DatabaseException when unblock method from repository throws exception"() {
+        given:
+        this.userRepositoryMock.setBlocked("login", false) >> {
+            ->
+            throw new RuntimeException()
+        }
+        when:
+        this.userService.unblockUser("login")
+        then:
+        thrown(DatabaseException.class)
     }
 }

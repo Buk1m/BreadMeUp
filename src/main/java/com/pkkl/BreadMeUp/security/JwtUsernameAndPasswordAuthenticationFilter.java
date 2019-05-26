@@ -44,7 +44,6 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
                     userCredentials.getLogin(), userCredentials.getPassword(), Collections.emptyList());
 
             return authManager.authenticate(authToken);
-
         } catch (IOException e) {
             throw new RuntimeException(e.getMessage(), e);
         }
@@ -56,10 +55,10 @@ public class JwtUsernameAndPasswordAuthenticationFilter extends UsernamePassword
         long now = System.currentTimeMillis();
         AuthUserDetails authUserDetails = (AuthUserDetails) auth.getPrincipal();
         String token = Jwts.builder()
-                .setSubject(String.valueOf(authUserDetails.getId()))
+                .setSubject(authUserDetails.getUsername())
                 .claim("authorities", auth.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority).collect(Collectors.toList()))
-                .claim("login", authUserDetails.getUsername())
+                .claim("id", authUserDetails.getId())
                 .setIssuedAt(new Date(now))
                 .setExpiration(new Date(now + jwtAuthSettings.getExpiration() * 1000))
                 .signWith(SignatureAlgorithm.HS512, jwtAuthSettings.getSecret().getBytes())

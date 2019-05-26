@@ -18,4 +18,6 @@ public class UserDetailsDto {
     private String email;
 
     private String phone;
+
+    private boolean blocked;
 }

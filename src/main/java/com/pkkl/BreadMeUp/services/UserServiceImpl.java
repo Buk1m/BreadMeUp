@@ -31,7 +31,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
+                           PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
@@ -54,6 +55,24 @@ public class UserServiceImpl implements UserService {
             if (e.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
                 throw new ConstraintException(e.getMessage(), e);
             }
+            throw new DatabaseException(e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void blockUser(String login) {
+        this.changeBlocked(login, true);
+    }
+
+    @Override
+    public void unblockUser(String login) {
+        this.changeBlocked(login, false);
+    }
+
+    private void changeBlocked(String login, boolean blocked) {
+        try {
+            this.userRepository.setBlocked(login, blocked);
+        } catch (Exception e) {
             throw new DatabaseException(e.getMessage(), e);
         }
     }

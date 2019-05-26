@@ -3,6 +3,7 @@ package com.pkkl.BreadMeUp.security;
 import com.pkkl.BreadMeUp.model.Role;
 import com.pkkl.BreadMeUp.model.User;
 import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.apache.tomcat.util.buf.StringUtils;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.AuthorityUtils;
@@ -11,6 +12,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.stream.Collectors;
 
+@Data
 @AllArgsConstructor
 public class AuthUserDetails implements UserDetails {
 
@@ -41,7 +43,7 @@ public class AuthUserDetails implements UserDetails {
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return !this.user.isBlocked();
     }
 
     @Override
@@ -54,7 +56,7 @@ public class AuthUserDetails implements UserDetails {
         return true;
     }
 
-    public int getId() {
+    public Integer getId() {
         return this.user.getId();
     }
 }

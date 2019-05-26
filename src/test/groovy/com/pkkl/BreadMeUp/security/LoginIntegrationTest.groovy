@@ -52,13 +52,15 @@ class LoginIntegrationTest extends Specification {
     def "Should return in authorization header token and 200 status code"() {
         given:
         Sql sql = new Sql(dataSource)
-        sql.execute("insert into users values(1, 'email@email.email', 'login', :password, '123456789', 1)",
+        and:
+        sql.execute("insert into users values(1, false, 'email@email.email', 'login', :password, '123456789', 1)",
                 [password:  passwordEncoder.encode("password")])
-
+        and:
         def userId = sql.firstRow("select user_id from users").getProperty('user_id')
         def roleId = sql.firstRow("select role_id from roles").getProperty('role_id')
-
-        sql.execute("insert into users_roles values(:userId, :userId)", [userId: userId, roleId: roleId])
+        and:
+        sql.execute("insert into users_roles values(:userId, :roleId)", [userId: userId, roleId: roleId])
+        and:
         Map request = [
                 login   : 'login',
                 password: 'password'
@@ -77,8 +79,10 @@ class LoginIntegrationTest extends Specification {
     def "Should return 401 status code"() {
         given:
         Sql sql = new Sql(dataSource)
-        sql.execute("insert into users values(1, 'email@email.email', 'login', :password, '123456789', 1)",
+        and:
+        sql.execute("insert into users values(1, false, 'email@email.email', 'login', :password, '123456789', 1)",
                 [password:  passwordEncoder.encode("password")])
+        and:
         Map request = [
                 login   : 'incorrectLogin',
                 password: 'password'
