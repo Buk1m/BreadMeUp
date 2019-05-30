@@ -2,10 +2,10 @@ package com.pkkl.BreadMeUp.services
 
 import com.pkkl.BreadMeUp.exceptions.ConstraintException
 import com.pkkl.BreadMeUp.exceptions.DatabaseException
-import com.pkkl.BreadMeUp.model.*
+import com.pkkl.BreadMeUp.model.Bakery
+import com.pkkl.BreadMeUp.model.Category
+import com.pkkl.BreadMeUp.model.Product
 import com.pkkl.BreadMeUp.repositories.ProductRepository
-import jdk.jshell.spi.ExecutionControl
-import org.springframework.dao.InvalidDataAccessApiUsageException
 import spock.lang.Specification
 
 import javax.validation.ConstraintViolation
@@ -15,7 +15,7 @@ class ProductServiceTest extends Specification {
 
     private ProductRepository productRepository = Mock(ProductRepository.class)
 
-    private ProductService productService;
+    private ProductService productService
 
     def setup() {
         this.productService = new ProductServiceImpl(productRepository)
@@ -46,7 +46,7 @@ class ProductServiceTest extends Specification {
         Product product1 = Mock(Product.class)
         Product product2 = Mock(Product.class)
         and:
-        productRepository.findAll() >> Arrays.asList(product1, product2)
+        productRepository.findAll() >> List.of(product1, product2)
         when:
         List<Product> returnedProducts = productService.getAll()
         then:
@@ -137,17 +137,6 @@ class ProductServiceTest extends Specification {
         returnedProduct == product
     }
 
-    def "Should add throw ConstraintException when repository save throws InvalidDataAccessApiUsageException"() {
-        given:
-        Product product = Mock(Product.class)
-        and:
-        productRepository.save(_ as Product) >> { p -> throw new InvalidDataAccessApiUsageException("message") }
-        when:
-        this.productService.add(product)
-        then:
-        thrown(ConstraintException.class)
-    }
-
     def "Should add throw ConstraintException when repository save throws ConstraintViolationException"() {
         given:
         Product product = Mock(Product.class)
@@ -188,7 +177,7 @@ class ProductServiceTest extends Specification {
         Bakery bakery2 = Mock(Bakery.class)
         Product product2 = Product.builder().bakery(bakery2).build()
         and:
-        productRepository.findAll() >> Arrays.asList(product1, product2)
+        productRepository.findAll() >> List.of(product1, product2)
         when:
         List<Product> returnedProducts = this.productService.getByBakery(bakery1)
         then:
@@ -214,7 +203,7 @@ class ProductServiceTest extends Specification {
         Category category2 = Mock(Category.class)
         Product product2 = Product.builder().category(category2).build()
         and:
-        productRepository.findAll() >> Arrays.asList(product1, product2)
+        productRepository.findAll() >> List.of(product1, product2)
         when:
         List<Product> returnedProducts = this.productService.getByCategory(category1)
         then:
@@ -242,7 +231,7 @@ class ProductServiceTest extends Specification {
         Bakery bakery2 = Mock(Bakery.class)
         Product product2 = Product.builder().category(category2).bakery(bakery2).build()
         and:
-        productRepository.findAll() >> Arrays.asList(product1, product2)
+        productRepository.findAll() >> List.of(product1, product2)
         when:
         List<Product> returnedProducts = this.productService.getByCategoryAndBakery(category1, bakery1)
         then:
