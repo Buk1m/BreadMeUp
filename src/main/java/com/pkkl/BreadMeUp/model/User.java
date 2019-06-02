@@ -1,9 +1,6 @@
 package com.pkkl.BreadMeUp.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.domain.Persistable;
 
@@ -51,6 +48,11 @@ public class User implements Persistable<Integer> {
     @ManyToMany(cascade = CascadeType.ALL)
     @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
+
+    @OneToMany
+    @JoinColumn(name = "order_id")
+    @ToString.Exclude
+    private Set<Order> orders;
 
     private boolean blocked;
 

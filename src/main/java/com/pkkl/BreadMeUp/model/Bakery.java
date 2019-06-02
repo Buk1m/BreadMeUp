@@ -1,14 +1,12 @@
 package com.pkkl.BreadMeUp.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.Pattern;
+import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -51,6 +49,11 @@ public class Bakery {
     @NotBlank
     @Length(min = 1, max = 15, message = "Street number length should be from 1 to 15")
     private String streetNumber;
+
+    @OneToMany
+    @JoinColumn(name = "order_id")
+    @ToString.Exclude
+    private Set<Order> orders;
 
     @Version
     @Column(name = "version")
