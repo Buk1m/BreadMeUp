@@ -24,8 +24,7 @@ public class ProductAvailabilityServiceImpl implements ProductAvailabilityServic
     public ProductAvailabilityServiceImpl(ProductAvailabilityRepository productAvailabilityRepository) {
         this.productAvailabilityRepository = productAvailabilityRepository;
     }
-
-
+    
     @Override
     public ProductAvailability getById(int id) {
         try {
