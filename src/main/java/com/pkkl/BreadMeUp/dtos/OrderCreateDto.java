@@ -12,15 +12,13 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class OrderCreateDto {
-
     private int userId;
 
     private int bakeryId;
 
-    @NotNull
+    @NotNull(message = "Order's date cannot be null")
     private Date date;
 
-    @NotNull
+    @NotNull(message = "Order's products list cannot be null")
     private Set<OrderProductDto> orderProducts;
-
 }

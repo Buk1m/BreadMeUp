@@ -14,18 +14,17 @@ import java.util.Date;
 public class OrderBasicDto {
     private int id;
 
-    @NotBlank
+    @NotBlank(message = "Bakery name cannot be blank")
     private String bakeryName;
 
-    @NotBlank
+    @NotBlank(message = "Username cannot be blank")
     private String userName;
 
-    @NotBlank
+    @NotBlank(message = "City cannot be blank")
     private String city;
 
-    @NotNull
+    @NotNull(message = "Order receive date cannot be null")
     private Date orderReceiveDate;
 
     private boolean completed;
-
 }

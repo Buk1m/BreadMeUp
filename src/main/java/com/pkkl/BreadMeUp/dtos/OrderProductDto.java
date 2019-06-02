@@ -16,7 +16,7 @@ public class OrderProductDto {
 
     private long productVersion;
 
-    @Min(0)
+    @Min(1)
     private int amount;
 
     private long version;
