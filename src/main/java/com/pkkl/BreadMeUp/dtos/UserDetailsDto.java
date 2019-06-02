@@ -20,4 +20,6 @@ public class UserDetailsDto {
     private String phone;
 
     private boolean blocked;
+
+    private long version;
 }
