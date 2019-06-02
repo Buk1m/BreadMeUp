@@ -26,19 +26,22 @@ public class Order {
     @Column(name = "completed")
     private boolean completed;
 
-    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @Column(name = "cancelled")
+    private boolean cancelled;
+
+    @ManyToOne()
     @JoinColumn(name = "user_id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private User user;
 
-    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @ManyToOne()
     @JoinColumn(name = "bakery_id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Bakery bakery;
 
-    @OneToMany
+    @OneToMany(cascade = CascadeType.ALL)
     @JoinColumn(name = "order_product_id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

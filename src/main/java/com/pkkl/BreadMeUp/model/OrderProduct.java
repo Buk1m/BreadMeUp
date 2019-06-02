@@ -42,13 +42,13 @@ public class OrderProduct {
     @Min(0)
     private double size;
 
-    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @ManyToOne()
     @JoinColumn(name = "order_id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Order order;
 
-    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @ManyToOne()
     @JoinColumn(name = "product_id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
