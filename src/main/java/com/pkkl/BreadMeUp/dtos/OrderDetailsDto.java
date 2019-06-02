@@ -11,6 +11,7 @@ import java.util.Set;
 @AllArgsConstructor
 @Builder
 public class OrderDetailsDto {
+
     private int id;
 
     private BakeryDto bakery;
