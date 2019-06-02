@@ -22,31 +22,31 @@ public class Bakery {
     private int id;
 
     @Column(name = "place_id", unique = true)
-    @NotBlank
+    @NotBlank(message = "PlaceId cannot be blank")
     private String placeId;
 
     @Column(name = "name", unique = true)
-    @NotBlank
+    @NotBlank(message = "Name cannot be blank")
     @Length(min = 3, max = 64, message = "Name length should be from 3 to 64")
     private String name;
 
     @Column(name = "city")
-    @NotBlank
+    @NotBlank(message = "City cannot be blank")
     @Length(min = 3, max = 64, message = "City length should be from 3 to 64")
     private String city;
 
     @Column(name = "postal_code")
-    @NotBlank
+    @NotBlank(message = "Postal code cannot be blank")
     @Pattern(regexp = "\\d{2}-\\d{3}", message = "Postal code is not valid")
     private String postalCode;
 
     @Column(name = "street_name")
-    @NotBlank
+    @NotBlank(message = "Street name cannot be blank")
     @Length(min = 3, max = 64, message = "Street name length should be from 3 to 64")
     private String streetName;
 
     @Column(name = "street_number")
-    @NotBlank
+    @NotBlank(message = "Street number cannot be blank")
     @Length(min = 1, max = 15, message = "Street number length should be from 1 to 15")
     private String streetNumber;
 
