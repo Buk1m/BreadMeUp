@@ -17,7 +17,6 @@ public class Order {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "order_id")
-    @EqualsAndHashCode.Exclude
     private int id;
 
     @Column(name = "order_receive")
@@ -26,20 +25,22 @@ public class Order {
     @Column(name = "completed")
     private boolean completed;
 
-
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "user_id")
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private User user;
 
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "bakery_id")
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Bakery bakery;
 
     @OneToMany
     @JoinColumn(name = "order_product_id")
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Set<OrderProduct> orderProducts;
 
     @Version

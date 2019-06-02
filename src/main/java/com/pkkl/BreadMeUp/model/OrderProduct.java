@@ -45,11 +45,13 @@ public class OrderProduct {
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "order_id")
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Order order;
 
     @ManyToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "product_id")
     @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private Product product;
 
     @Version
