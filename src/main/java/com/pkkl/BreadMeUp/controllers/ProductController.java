@@ -64,9 +64,7 @@ public class ProductController {
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public ProductDto update(@PathVariable(name = "id") int id, @Valid @RequestBody final ProductDto productDto) {
-        if (id != productDto.getId()) {
-            //TODO
-        }
+        productDto.setId(id);
         return mapProductToProductDto(
                 productService.update(
                         mapProductDtoToProduct(productDto)
@@ -79,7 +77,7 @@ public class ProductController {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public ProductDto add( @Valid @RequestBody final ProductDto productDto) {
+    public ProductDto add(@Valid @RequestBody final ProductDto productDto) {
         return mapProductToProductDto(
                 productService.add(
                         mapProductDtoToProduct(productDto)
@@ -88,11 +86,11 @@ public class ProductController {
     }
 
     @GetMapping(
-            value = "/{bakeryId}",
+            value = "bakeries/{bakeryId}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseStatus(HttpStatus.OK)
-    public List<ProductDto> getByBakery(@PathVariable(name = "bakeryId") int bakeryId){
+    public List<ProductDto> getByBakery(@PathVariable(name = "bakeryId") int bakeryId) {
         return mapProductListToProductDtoList(
                 productService.getByBakery(bakeryId)
         );
@@ -100,22 +98,22 @@ public class ProductController {
 
 
     @GetMapping(
-            value = "/{categoryId}",
+            value = "categories/{categoryId}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseStatus(HttpStatus.OK)
-    public List<ProductDto> getByCategory(@PathVariable(name = "categoryId") int categoryId){
+    public List<ProductDto> getByCategory(@PathVariable(name = "categoryId") int categoryId) {
         return mapProductListToProductDtoList(
                 productService.getByCategory(categoryId)
         );
     }
 
     @GetMapping(
-            value = "/{bakeryId}/{categoryId}",
+            value = "bakeries/{bakeryId}/categories/{categoryId}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseStatus(HttpStatus.OK)
-    public List<ProductDto> getByCategory(@PathVariable(name = "bakeryId") int bakeryId, @PathVariable(name = "categoryId") int categoryId){
+    public List<ProductDto> getByCategoryAndBakery(@PathVariable(name = "bakeryId") int bakeryId, @PathVariable(name = "categoryId") int categoryId) {
         return mapProductListToProductDtoList(
                 productService.getByCategoryAndBakery(categoryId, bakeryId)
         );
@@ -130,7 +128,7 @@ public class ProductController {
         return modelMapper.map(product, ProductDto.class);
     }
 
-    private List<ProductDto> mapProductListToProductDtoList(final List<Product> products){
+    private List<ProductDto> mapProductListToProductDtoList(final List<Product> products) {
         return products.stream()
                 .map(this::mapProductToProductDto)
                 .collect(Collectors.toList());

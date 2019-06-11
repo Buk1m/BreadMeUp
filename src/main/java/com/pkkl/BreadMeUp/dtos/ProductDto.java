@@ -30,13 +30,13 @@ public class ProductDto {
 
     private boolean active;
 
-    @NotNull
+    @NotNull(message = "Bakery cannot be null")
     private BakeryDto bakery;
 
-    @NotNull
+    @NotNull(message = "Category cannot be null")
     private CategoryDto category;
 
-    @NotNull
+    @NotNull(message = "ProductType cannot be null")
     private ProductTypeDto productType;
 
     private Set<ProductAvailabilityDto> productAvailability;
