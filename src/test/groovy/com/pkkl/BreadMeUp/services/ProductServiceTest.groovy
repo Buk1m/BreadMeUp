@@ -172,14 +172,14 @@ class ProductServiceTest extends Specification {
 
     def "Should getByBakery return product's collection with given bakery"() {
         given:
-        Bakery bakery1 = Mock(Bakery.class)
+        Bakery bakery1 = Bakery.builder().id(1).build()
         Product product1 = Product.builder().bakery(bakery1).build()
-        Bakery bakery2 = Mock(Bakery.class)
+        Bakery bakery2 = Bakery.builder().id(2).build()
         Product product2 = Product.builder().bakery(bakery2).build()
         and:
         productRepository.findAll() >> List.of(product1, product2)
         when:
-        List<Product> returnedProducts = this.productService.getByBakery(bakery1)
+        List<Product> returnedProducts = this.productService.getByBakery(1)
         then:
         returnedProducts.size() == 1
         returnedProducts.first() == product1
@@ -187,25 +187,23 @@ class ProductServiceTest extends Specification {
 
     def "Should getByBakery throw DatabaseException when repository thrown exception"() {
         given:
-        Bakery bakery = Mock(Bakery.class)
-        and:
         productRepository.findAll() >> {throw new RuntimeException()}
         when:
-        this.productService.getByBakery(bakery)
+        this.productService.getByBakery(1)
         then:
         thrown(DatabaseException.class)
     }
 
     def "Should getByCategory return product's collection with given category"() {
         given:
-        Category category1 = Mock(Category.class)
+        Category category1 = Category.builder().id(1).build()
         Product product1 = Product.builder().category(category1).build()
-        Category category2 = Mock(Category.class)
+        Category category2 = Category.builder().id(2).build()
         Product product2 = Product.builder().category(category2).build()
         and:
         productRepository.findAll() >> List.of(product1, product2)
         when:
-        List<Product> returnedProducts = this.productService.getByCategory(category1)
+        List<Product> returnedProducts = this.productService.getByCategory(1)
         then:
         returnedProducts.size() == 1
         returnedProducts.first() == product1
@@ -213,27 +211,25 @@ class ProductServiceTest extends Specification {
 
     def "Should getByCategory throw DatabaseException when repository thrown exception"() {
         given:
-        Category category = Mock(Category.class)
-        and:
         productRepository.findAll() >> {throw new RuntimeException()}
         when:
-        this.productService.getByCategory(category)
+        this.productService.getByCategory(1)
         then:
         thrown(DatabaseException.class)
     }
 
     def "Should getByCategoryAndBakery return product's collection with given bakery and category"() {
         given:
-        Category category1 = Mock(Category.class)
-        Bakery bakery1 = Mock(Bakery.class)
+        Category category1 = Category.builder().id(1).build()
+        Bakery bakery1 = Bakery.builder().id(1).build()
         Product product1 = Product.builder().category(category1).bakery(bakery1).build()
-        Category category2 = Mock(Category.class)
-        Bakery bakery2 = Mock(Bakery.class)
+        Category category2 = Category.builder().id(2).build()
+        Bakery bakery2 = Bakery.builder().id(2).build()
         Product product2 = Product.builder().category(category2).bakery(bakery2).build()
         and:
         productRepository.findAll() >> List.of(product1, product2)
         when:
-        List<Product> returnedProducts = this.productService.getByCategoryAndBakery(category1, bakery1)
+        List<Product> returnedProducts = this.productService.getByCategoryAndBakery(1, 1)
         then:
         returnedProducts.size() == 1
         returnedProducts.first() == product1
@@ -241,12 +237,9 @@ class ProductServiceTest extends Specification {
 
     def "Should getByCategoryAndBakery throw DatabaseException when repository thrown exception"() {
         given:
-        Category category = Mock(Category.class)
-        Bakery bakery = Mock(Bakery.class)
-        and:
         productRepository.findAll() >> {throw new RuntimeException()}
         when:
-        this.productService.getByCategoryAndBakery(category, bakery)
+        this.productService.getByCategoryAndBakery(1,1)
         then:
         thrown(DatabaseException.class)
     }

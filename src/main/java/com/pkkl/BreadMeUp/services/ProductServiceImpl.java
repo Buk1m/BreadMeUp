@@ -63,10 +63,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> getByBakery(final Bakery bakery) {
+    public List<Product> getByBakery(final int bakeryId) {
         try {
             return productRepository.findAll().stream()
-                    .filter(p -> p.getBakery().equals(bakery))
+                    .filter(p -> containsBakery(p, bakeryId))
                     .collect(Collectors.toList());
         } catch (Exception e){
             throw new DatabaseException(e.getMessage(), e);
@@ -74,10 +74,10 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> getByCategory(final Category category) {
+    public List<Product> getByCategory(final int categoryId) {
         try {
             return productRepository.findAll().stream()
-                    .filter(p -> p.getCategory().equals(category))
+                    .filter(p -> containsCategory(p, categoryId))
                     .collect(Collectors.toList());
         } catch (Exception e){
             throw new DatabaseException(e.getMessage(), e);
@@ -85,11 +85,11 @@ public class ProductServiceImpl implements ProductService {
     }
 
     @Override
-    public List<Product> getByCategoryAndBakery(final Category category, final Bakery bakery) {
+    public List<Product> getByCategoryAndBakery(final int categoryId, final int bakeryId) {
         try {
             return productRepository.findAll().stream()
-                    .filter(p -> p.getBakery().equals(bakery))
-                    .filter(p -> p.getCategory().equals(category))
+                    .filter(p -> containsBakery(p, bakeryId))
+                    .filter(p -> containsCategory(p, categoryId))
                     .collect(Collectors.toList());
         } catch (Exception e){
             throw new DatabaseException(e.getMessage(), e);
@@ -107,5 +107,13 @@ public class ProductServiceImpl implements ProductService {
             }
             throw new DatabaseException(e.getMessage(), e);
         }
+    }
+
+    private boolean containsBakery(final Product product, final int bakeryId){
+        return product.getBakery().getId() == bakeryId;
+    }
+
+    private boolean containsCategory(final Product product, final int categoryId){
+        return product.getCategory().getId() == categoryId;
     }
 }
