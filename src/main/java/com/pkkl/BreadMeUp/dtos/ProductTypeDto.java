@@ -7,6 +7,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
@@ -15,6 +16,7 @@ import javax.validation.constraints.Min;
 public class ProductTypeDto {
     private int id;
 
+    @NotNull(message = "Unit cannot be null")
     private UnitOfMeasurement unitOfMeasurement;
 
     @Min(0)
