@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.NotNull;
 
 @Data
 @AllArgsConstructor
@@ -21,6 +22,7 @@ public class ProductType {
     @Column(name = "product_type_id")
     private int id;
 
+    @NotNull(message = "Unit cannot be null")
     @Enumerated(value = EnumType.STRING)
     @Column(name = "unit_of_measurement")
     private UnitOfMeasurement unitOfMeasurement;
