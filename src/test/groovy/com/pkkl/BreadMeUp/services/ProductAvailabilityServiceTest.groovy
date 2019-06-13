@@ -11,13 +11,13 @@ import javax.validation.ConstraintViolation
 import javax.validation.ConstraintViolationException
 import java.time.LocalDate
 
-class ProductAvailabilityServiceTest extends Specification{
+class ProductAvailabilityServiceTest extends Specification {
 
     private ProductAvailabilityRepository productAvailabilityRepository = Mock(ProductAvailabilityRepository.class)
 
     private ProductAvailabilityService productAvailabilityService
 
-    def setup(){
+    def setup() {
         productAvailabilityService = new ProductAvailabilityServiceImpl(productAvailabilityRepository)
     }
 
@@ -37,47 +37,6 @@ class ProductAvailabilityServiceTest extends Specification{
         productAvailabilityRepository.findById(1) >> Optional.ofNullable(null)
         when:
         productAvailabilityService.getById(1)
-        then:
-        thrown(DatabaseException.class)
-    }
-
-    def "Should return object's collection when product availability exist"() {
-        given:
-        ProductAvailability productAvailability1 = Mock(ProductAvailability.class)
-        ProductAvailability productAvailability2 = Mock(ProductAvailability.class)
-        and:
-        productAvailabilityRepository.findAll() >> List.of(productAvailability1, productAvailability2)
-        when:
-        List<ProductAvailability> returnedProductAvailabilities = productAvailabilityService.getAll()
-        then:
-        returnedProductAvailabilities.size() == 2
-        returnedProductAvailabilities.contains(productAvailability1)
-        returnedProductAvailabilities.contains(productAvailability2)
-    }
-
-    def "Should throw DatabaseException when repository findAll throws Exception"() {
-        given:
-        productAvailabilityRepository.findAll() >> {throw new RuntimeException()}
-        when:
-        productAvailabilityService.getAll()
-        then:
-        thrown(DatabaseException.class)
-    }
-
-    def "Should not throw exception when product availability deleted"() {
-        given:
-        productAvailabilityRepository.deleteById(1)
-        when:
-        productAvailabilityService.delete(1)
-        then:
-        noExceptionThrown()
-    }
-
-    def "Should throw DatabaseException when repository deleteById throws Exception"() {
-        given:
-        productAvailabilityRepository.deleteById(1) >> { throw new RuntimeException()}
-        when:
-        productAvailabilityService.delete(1)
         then:
         thrown(DatabaseException.class)
     }
@@ -170,30 +129,6 @@ class ProductAvailabilityServiceTest extends Specification{
         thrown(DatabaseException.class)
     }
 
-    def "Should getByProduct return product availabilities collection with given product"() {
-        given:
-        Product product1 = Product.builder().id(1).build()
-        ProductAvailability productAvailability1 = ProductAvailability.builder().product(product1).build()
-        Product product2= Product.builder().id(2).build()
-        ProductAvailability productAvailability2 = ProductAvailability.builder().product(product2).build()
-        and:
-        productAvailabilityRepository.findAll() >> List.of(productAvailability1, productAvailability2)
-        when:
-        List<ProductAvailability> returnedProductAvailabilities = this.productAvailabilityService.getByProduct(1)
-        then:
-        returnedProductAvailabilities.size() == 1
-        returnedProductAvailabilities.first() == productAvailability1
-    }
-
-    def "Should getByProduct throw DatabaseException when repository thrown exception"() {
-        given:
-        productAvailabilityRepository.findAll() >> {throw new RuntimeException()}
-        when:
-        this.productAvailabilityService.getByProduct(1)
-        then:
-        thrown(DatabaseException.class)
-    }
-
     def "Should getByDate return product availabilities collection with given date"() {
         given:
         LocalDate localDate1 = LocalDate.now()
@@ -213,11 +148,44 @@ class ProductAvailabilityServiceTest extends Specification{
         given:
         LocalDate localDate = LocalDate.now()
         and:
-        productAvailabilityRepository.findAll() >> {throw new RuntimeException()}
+        productAvailabilityRepository.findAll() >> { throw new RuntimeException() }
         when:
         this.productAvailabilityService.getByDate(localDate)
         then:
         thrown(DatabaseException.class)
     }
 
+    def "Should getByDateAndProduct return product availabilities collection with given date"() {
+        given:
+        Product product1 = Product.builder().id(1).build()
+        LocalDate localDate1 = LocalDate.now()
+        Product product2 = Product.builder().id(2).build()
+        LocalDate localDate2 = LocalDate.now().plusDays(1)
+        and:
+        ProductAvailability productAvailability1 = ProductAvailability.builder().product(product1).date(localDate1).build()
+        ProductAvailability productAvailability2 = ProductAvailability.builder().product(product2).date(localDate2).build()
+        ProductAvailability productAvailability3 = ProductAvailability.builder().product(product2).date(localDate1).build()
+        ProductAvailability productAvailability4 = ProductAvailability.builder().product(product1).date(localDate2).build()
+        and:
+        productAvailabilityRepository.findAll() >> List.of(productAvailability1, productAvailability2,
+                productAvailability3, productAvailability4)
+        when:
+        List<ProductAvailability> returnedProductAvailabilities = this.productAvailabilityService
+                .getByDateAndProduct(localDate1, product1.getId())
+        then:
+        returnedProductAvailabilities.size() == 1
+        returnedProductAvailabilities.first() == productAvailability1
+    }
+
+    def "Should getByDateAndProduct throw DatabaseException when repository thrown exception"() {
+        given:
+        Product product = Product.builder().id(1).build()
+        LocalDate localDate = LocalDate.now()
+        and:
+        productAvailabilityRepository.findAll() >> { throw new RuntimeException() }
+        when:
+        this.productAvailabilityService.getByDateAndProduct(localDate, product.getId())
+        then:
+        thrown(DatabaseException.class)
+    }
 }

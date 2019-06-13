@@ -35,24 +35,6 @@ public class ProductAvailabilityServiceImpl implements ProductAvailabilityServic
     }
 
     @Override
-    public List<ProductAvailability> getAll() {
-        try {
-            return productAvailabilityRepository.findAll();
-        } catch (Exception e) {
-            throw new DatabaseException(e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public void delete(int id) {
-        try {
-            productAvailabilityRepository.deleteById(id);
-        } catch (Exception e) {
-            throw new DatabaseException(e.getMessage(), e);
-        }
-    }
-
-    @Override
     public ProductAvailability update(final ProductAvailability productAvailability) {
         return saveOrUpdate(productAvailability);
     }
@@ -63,9 +45,10 @@ public class ProductAvailabilityServiceImpl implements ProductAvailabilityServic
     }
 
     @Override
-    public List<ProductAvailability> getByProduct(final int productId) {
+    public List<ProductAvailability> getByDateAndProduct(final LocalDate date, final int productId) {
         try {
             return productAvailabilityRepository.findAll().stream()
+                    .filter(p -> contains(p, date))
                     .filter(p -> contains(p, productId))
                     .collect(Collectors.toList());
         } catch (Exception e) {
