@@ -2,8 +2,10 @@ package com.pkkl.BreadMeUp.services;
 
 import com.pkkl.BreadMeUp.exceptions.ConstraintException;
 import com.pkkl.BreadMeUp.exceptions.DatabaseException;
+import com.pkkl.BreadMeUp.model.Product;
 import com.pkkl.BreadMeUp.model.ProductAvailability;
 import com.pkkl.BreadMeUp.repositories.ProductAvailabilityRepository;
+import com.pkkl.BreadMeUp.repositories.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,15 +22,20 @@ public class ProductAvailabilityServiceImpl implements ProductAvailabilityServic
 
     private final ProductAvailabilityRepository productAvailabilityRepository;
 
+    private final ProductRepository productRepository;
+
     @Autowired
-    public ProductAvailabilityServiceImpl(ProductAvailabilityRepository productAvailabilityRepository) {
+    public ProductAvailabilityServiceImpl(ProductAvailabilityRepository productAvailabilityRepository,
+                                          ProductRepository productRepository) {
         this.productAvailabilityRepository = productAvailabilityRepository;
+        this.productRepository = productRepository;
     }
-    
+
     @Override
     public ProductAvailability getById(int id) {
         try {
-            return productAvailabilityRepository.findById(id).orElseThrow(() -> new RuntimeException("ProductAvailability doesn't exist"));
+            return productAvailabilityRepository.findById(id).orElseThrow(
+                    () -> new RuntimeException("ProductAvailability doesn't exist"));
         } catch (Exception e) {
             throw new DatabaseException(e.getMessage(), e);
         }
@@ -45,23 +52,14 @@ public class ProductAvailabilityServiceImpl implements ProductAvailabilityServic
     }
 
     @Override
-    public List<ProductAvailability> getByDateAndProduct(final LocalDate date, final int productId) {
+    public ProductAvailability getByDateAndProduct(final LocalDate date, final int productId) {
         try {
             return productAvailabilityRepository.findAll().stream()
                     .filter(p -> contains(p, date))
                     .filter(p -> contains(p, productId))
-                    .collect(Collectors.toList());
-        } catch (Exception e) {
-            throw new DatabaseException(e.getMessage(), e);
-        }
-    }
-
-    @Override
-    public List<ProductAvailability> getByDate(final LocalDate date) {
-        try {
-            return productAvailabilityRepository.findAll().stream()
-                    .filter(p -> contains(p, date))
-                    .collect(Collectors.toList());
+                    .findAny().orElseGet(
+                            () -> this.createProductAvailabilityFromProduct(date, productId)
+                    );
         } catch (Exception e) {
             throw new DatabaseException(e.getMessage(), e);
         }
@@ -86,5 +84,17 @@ public class ProductAvailabilityServiceImpl implements ProductAvailabilityServic
 
     private boolean contains(final ProductAvailability productAvailability, final LocalDate date) {
         return productAvailability.getDate().equals(date);
+    }
+
+    private ProductAvailability createProductAvailabilityFromProduct(final LocalDate localDate, final int productId) {
+        Product product = this.productRepository.findById(productId)
+                .orElseThrow(() -> new DatabaseException("Product does not exist with id" + productId));
+
+        return ProductAvailability.builder()
+                .date(localDate)
+                .limit(product.getLimit())
+                .orderedNumber(0)
+                .product(product)
+                .build();
     }
 }

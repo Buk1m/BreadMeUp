@@ -73,16 +73,11 @@ public class ProductAvailabilityController {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseStatus(HttpStatus.OK)
-    public List<ProductAvailabilityDto> getByDateOrDateAndProduct(@RequestParam("date") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate localDate,
-                                                                  @RequestParam(name = "productId", required = false) Integer productId) {
-        List<ProductAvailability> productAvailabilities;
-        if (productId == null) {
-            productAvailabilities = this.productAvailabilityService.getByDate(localDate);
-        } else {
-            productAvailabilities = this.productAvailabilityService.getByDateAndProduct(localDate, productId);
-        }
-
-        return this.mapProductAvailabilityListToProductAvailabilityDtoList(productAvailabilities);
+    public ProductAvailabilityDto getByDateOrDateAndProduct(@RequestParam("date") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate localDate,
+                                                            @RequestParam(name = "productId") Integer productId) {
+        return this.mapProductAvailabilityToProductAvailabilityDto(
+                this.productAvailabilityService.getByDateAndProduct(localDate, productId)
+        );
     }
 
     private ProductAvailability mapProductAvailabilityDtoToProductAvailability(final ProductAvailabilityDto productAvailabilityDto) {
@@ -91,12 +86,5 @@ public class ProductAvailabilityController {
 
     private ProductAvailabilityDto mapProductAvailabilityToProductAvailabilityDto(final ProductAvailability productAvailability) {
         return this.modelMapper.map(productAvailability, ProductAvailabilityDto.class);
-    }
-
-    private List<ProductAvailabilityDto> mapProductAvailabilityListToProductAvailabilityDtoList(
-            final List<ProductAvailability> productAvailabilities) {
-        return productAvailabilities.stream()
-                .map(this::mapProductAvailabilityToProductAvailabilityDto)
-                .collect(Collectors.toList());
     }
 }

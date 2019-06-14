@@ -5,6 +5,7 @@ import com.pkkl.BreadMeUp.exceptions.DatabaseException
 import com.pkkl.BreadMeUp.model.Product
 import com.pkkl.BreadMeUp.model.ProductAvailability
 import com.pkkl.BreadMeUp.repositories.ProductAvailabilityRepository
+import com.pkkl.BreadMeUp.repositories.ProductRepository
 import spock.lang.Specification
 
 import javax.validation.ConstraintViolation
@@ -15,10 +16,12 @@ class ProductAvailabilityServiceTest extends Specification {
 
     private ProductAvailabilityRepository productAvailabilityRepository = Mock(ProductAvailabilityRepository.class)
 
+    private ProductRepository productRepository = Mock(ProductRepository.class)
+
     private ProductAvailabilityService productAvailabilityService
 
     def setup() {
-        productAvailabilityService = new ProductAvailabilityServiceImpl(productAvailabilityRepository)
+        productAvailabilityService = new ProductAvailabilityServiceImpl(productAvailabilityRepository, productRepository)
     }
 
     def "Should return object when product availability exists"() {
@@ -129,33 +132,7 @@ class ProductAvailabilityServiceTest extends Specification {
         thrown(DatabaseException.class)
     }
 
-    def "Should getByDate return product availabilities collection with given date"() {
-        given:
-        LocalDate localDate1 = LocalDate.now()
-        ProductAvailability productAvailability1 = ProductAvailability.builder().date(localDate1).build()
-        LocalDate localDate2 = LocalDate.now().plusDays(1)
-        ProductAvailability productAvailability2 = ProductAvailability.builder().date(localDate2).build()
-        and:
-        productAvailabilityRepository.findAll() >> List.of(productAvailability1, productAvailability2)
-        when:
-        List<ProductAvailability> returnedProductAvailabilities = this.productAvailabilityService.getByDate(localDate1)
-        then:
-        returnedProductAvailabilities.size() == 1
-        returnedProductAvailabilities.first() == productAvailability1
-    }
-
-    def "Should getByDate throw DatabaseException when repository thrown exception"() {
-        given:
-        LocalDate localDate = LocalDate.now()
-        and:
-        productAvailabilityRepository.findAll() >> { throw new RuntimeException() }
-        when:
-        this.productAvailabilityService.getByDate(localDate)
-        then:
-        thrown(DatabaseException.class)
-    }
-
-    def "Should getByDateAndProduct return product availabilities collection with given date"() {
+    def "Should getByDateAndProduct return product availability"() {
         given:
         Product product1 = Product.builder().id(1).build()
         LocalDate localDate1 = LocalDate.now()
@@ -170,11 +147,40 @@ class ProductAvailabilityServiceTest extends Specification {
         productAvailabilityRepository.findAll() >> List.of(productAvailability1, productAvailability2,
                 productAvailability3, productAvailability4)
         when:
-        List<ProductAvailability> returnedProductAvailabilities = this.productAvailabilityService
+        ProductAvailability returnedProductAvailability = this.productAvailabilityService
                 .getByDateAndProduct(localDate1, product1.getId())
         then:
-        returnedProductAvailabilities.size() == 1
-        returnedProductAvailabilities.first() == productAvailability1
+        returnedProductAvailability == productAvailability1
+    }
+
+    def "Should getByDateAndProduct return product availabilities created from product"() {
+        given:
+        Product product1 = Product.builder().id(1).build()
+        LocalDate localDate1 = LocalDate.now()
+        Product product2 = Product.builder().id(2).build()
+        LocalDate localDate2 = LocalDate.now().plusDays(1)
+        and:
+        ProductAvailability productAvailability1 = ProductAvailability.builder().product(product2).date(localDate2).build()
+        ProductAvailability productAvailability2 = ProductAvailability.builder().product(product2).date(localDate1).build()
+        ProductAvailability productAvailability3 = ProductAvailability.builder().product(product1).date(localDate2).build()
+        and:
+        productAvailabilityRepository.findAll() >> List.of(productAvailability1, productAvailability2,
+                productAvailability3)
+        and:
+        Product productFromDatabase = Product.builder()
+                .id(1)
+                .limit(10)
+                .build()
+        and:
+        this.productRepository.findById(1) >> Optional.of(productFromDatabase)
+        when:
+        ProductAvailability returnedProductAvailability = this.productAvailabilityService
+                .getByDateAndProduct(localDate1, product1.getId())
+        then:
+        returnedProductAvailability.getDate() == localDate1
+        returnedProductAvailability.getOrderedNumber() == 0
+        returnedProductAvailability.getLimit() == 10
+        returnedProductAvailability.getProduct() == productFromDatabase
     }
 
     def "Should getByDateAndProduct throw DatabaseException when repository thrown exception"() {

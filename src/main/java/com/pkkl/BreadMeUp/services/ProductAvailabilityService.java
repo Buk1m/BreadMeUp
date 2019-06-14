@@ -13,7 +13,5 @@ public interface ProductAvailabilityService {
 
     ProductAvailability add(final ProductAvailability productAvailability);
 
-    List<ProductAvailability> getByDateAndProduct(final LocalDate date, final int productId);
-
-    List<ProductAvailability> getByDate(final LocalDate date);
+    ProductAvailability getByDateAndProduct(final LocalDate date, final int productId);
 }

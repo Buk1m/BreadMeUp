@@ -216,57 +216,14 @@ class ProductAvailabilityControllerTest extends Specification {
         results.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
     }
 
-    def "Should return list by date with code 200 code when product availabilities exist"() {
-        given:
-        ProductAvailability productAvailability1 = ProductAvailability.builder()
-                .id(1)
-                .build()
-        ProductAvailability productAvailability2 = ProductAvailability.builder()
-                .id(2)
-                .build()
-        and:
-        this.productAvailabilityService.getByDate(LocalDate.of(2019, 6, 13)) >>
-                List.of(productAvailability1, productAvailability2)
-        when:
-        def results = mockMvc.perform(
-                get('/availabilities/')
-                        .param("date", "13-06-2019")
-                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andDo(print())
-        then:
-        results.andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(jsonPath('$').isArray())
-                .andExpect(jsonPath('$[0].id').value("1"))
-                .andExpect(jsonPath('$[1].id').value("2"))
-    }
-
-    def "Should return 500 response code when productAvailability service getByDate throws DatabaseException"() {
-        this.productAvailabilityService.getByDate(LocalDate.of(2019, 6, 13)) >>
-                { throw new DatabaseException() }
-        when:
-        def results = mockMvc.perform(
-                get('/availabilities/')
-                        .param("date", "13-06-2019")
-                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andDo(print())
-        then:
-        results.andExpect(status().isInternalServerError())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(jsonPath('$').exists())
-    }
-
     def "Should return list by date and product with code 200 code when product availabilities exist"() {
         given:
-        ProductAvailability productAvailability1 = ProductAvailability.builder()
+        ProductAvailability productAvailability = ProductAvailability.builder()
                 .id(1)
-                .build()
-        ProductAvailability productAvailability2 = ProductAvailability.builder()
-                .id(2)
                 .build()
         and:
         this.productAvailabilityService.getByDateAndProduct(LocalDate.of(2019, 6, 13), 1) >>
-                List.of(productAvailability1, productAvailability2)
+                productAvailability
         when:
         def results = mockMvc.perform(
                 get('/availabilities/')
@@ -277,9 +234,7 @@ class ProductAvailabilityControllerTest extends Specification {
         then:
         results.andExpect(status().isOk())
                 .andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
-                .andExpect(jsonPath('$').isArray())
-                .andExpect(jsonPath('$[0].id').value("1"))
-                .andExpect(jsonPath('$[1].id').value("2"))
+                .andExpect(jsonPath('$.id').value("1"))
     }
 
     def "Should return 500 response code when productAvailability service getByDateAndProduct throws DatabaseException"() {
