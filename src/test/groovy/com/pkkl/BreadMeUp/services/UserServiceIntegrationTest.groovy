@@ -86,7 +86,7 @@ class UserServiceIntegrationTest extends Specification {
         given:
         Sql sql = new Sql(dataSource)
         and:
-        sql.execute("insert into users values(1, false, 'email@email.email', 'user', 'password', '123456789', 1)")
+        sql.execute("insert into users values(1, false, 'email@email.email', 'user', 'password', '123456789', 1, null)")
         when:
         this.userService.blockUser("user")
         then:
@@ -100,7 +100,7 @@ class UserServiceIntegrationTest extends Specification {
         given:
         Sql sql = new Sql(dataSource)
         and:
-        sql.execute("insert into users values(1, false, 'email@email.email', 'admin', 'password', '123456789', 1)")
+        sql.execute("insert into users values(1, false, 'email@email.email', 'admin', 'password', '123456789', 1, null)")
         when:
         this.userService.blockUser("admin")
         then:
@@ -114,7 +114,7 @@ class UserServiceIntegrationTest extends Specification {
         given:
         Sql sql = new Sql(dataSource)
         and:
-        sql.execute("insert into users values(1, false, 'email@email.email', 'user', 'password', '123456789', 1)")
+        sql.execute("insert into users values(1, false, 'email@email.email', 'user', 'password', '123456789', 1, null)")
         when:
         this.userService.blockUser("user")
         then:
@@ -128,7 +128,7 @@ class UserServiceIntegrationTest extends Specification {
         given:
         Sql sql = new Sql(dataSource)
         and:
-        sql.execute("insert into users values(1, true, 'email@email.email', 'user', 'password', '123456789', 1)")
+        sql.execute("insert into users values(1, true, 'email@email.email', 'user', 'password', '123456789', 1, null)")
         when:
         this.userService.unblockUser("user")
         then:
@@ -142,7 +142,7 @@ class UserServiceIntegrationTest extends Specification {
         given:
         Sql sql = new Sql(dataSource)
         and:
-        sql.execute("insert into users values(1, true, 'email@email.email', 'admin', 'password', '123456789', 1)")
+        sql.execute("insert into users values(1, true, 'email@email.email', 'admin', 'password', '123456789', 1, null)")
         when:
         this.userService.blockUser("admin")
         then:
@@ -156,7 +156,7 @@ class UserServiceIntegrationTest extends Specification {
         given:
         Sql sql = new Sql(dataSource)
         and:
-        sql.execute("insert into users values(1, true, 'email@email.email', 'user', 'password', '123456789', 1)")
+        sql.execute("insert into users values(1, true, 'email@email.email', 'user', 'password', '123456789', 1, null)")
         when:
         this.userService.unblockUser("user")
         then:

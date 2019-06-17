@@ -87,4 +87,13 @@ public class UserServiceImpl implements UserService {
             throw new UsernameNotFoundException("User not exists with login=" + username);
         }
     }
+
+    @Override
+    public void assignBakeryToUser(Integer userId, int bakeryId) {
+        try {
+            userRepository.assignBakeryToUser(userId, bakeryId);
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+    }
 }

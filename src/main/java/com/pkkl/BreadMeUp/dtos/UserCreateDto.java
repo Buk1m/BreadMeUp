@@ -32,4 +32,6 @@ public class UserCreateDto {
     @Pattern(regexp = "\\d{7,15}", message = "Phone is not valid")
     @NotBlank(message = "Phone cannot be blank")
     private String phone;
+
+    private BakeryDto bakery;
 }

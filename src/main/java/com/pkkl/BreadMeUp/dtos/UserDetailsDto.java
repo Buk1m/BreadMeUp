@@ -21,5 +21,7 @@ public class UserDetailsDto {
 
     private boolean blocked;
 
+    private BakeryDto bakery;
+
     private long version;
 }
