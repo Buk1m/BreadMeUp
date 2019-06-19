@@ -13,4 +13,7 @@ public interface UserService extends UserDetailsService {
 
     @PreAuthorize("hasRole('ROLE_ADMIN') && !principal.username.equals(#login)")
     void unblockUser(String login);
+
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    void assignBakeryToUser(Integer userId, int bakeryId);
 }

@@ -51,7 +51,7 @@ class UserControllerIntegrationTest extends Specification {
         given:
         Sql sql = new Sql(dataSource)
         and:
-        sql.execute("insert into users values(1, false, 'email@email.email', 'login', 'password', '123456789', 1)")
+        sql.execute("insert into users values(1, false, 'email@email.email', 'login', 'password', '123456789', 1, null)")
         and:
         def userId = sql.firstRow("select user_id from users").getProperty('user_id')
         def roleId = sql.firstRow("select role_id from roles where roles.name='ROLE_ADMIN'").getProperty('role_id')
@@ -73,7 +73,7 @@ class UserControllerIntegrationTest extends Specification {
         given:
         Sql sql = new Sql(dataSource)
         and:
-        sql.execute("insert into users values(1, false, 'email@email.email', 'admin', 'password', '123456789', 1)")
+        sql.execute("insert into users values(1, false, 'email@email.email', 'admin', 'password', '123456789', 1, null)")
         and:
         def userId = sql.firstRow("select user_id from users").getProperty('user_id')
         def roleId = sql.firstRow("select role_id from roles where roles.name='ROLE_ADMIN'").getProperty('role_id')
@@ -95,7 +95,7 @@ class UserControllerIntegrationTest extends Specification {
         given:
         Sql sql = new Sql(dataSource)
         and:
-        sql.execute("insert into users values(1, false, 'email@email.email', 'login', 'password', '123456789', 1)")
+        sql.execute("insert into users values(1, false, 'email@email.email', 'login', 'password', '123456789', 1, null)")
         and:
         def userId = sql.firstRow("select user_id from users").getProperty('user_id')
         def roleId = sql.firstRow("select role_id from roles where roles.name='ROLE_ADMIN'").getProperty('role_id')
@@ -116,7 +116,7 @@ class UserControllerIntegrationTest extends Specification {
     def "Should unblock user and return 200 response code when executor has admin role and does not try block yourself"() {
         given:
         Sql sql = new Sql(dataSource)
-        sql.execute("insert into users values(1, true, 'email@email.email', 'login', 'password', '123456789', 1)")
+        sql.execute("insert into users values(1, true, 'email@email.email', 'login', 'password', '123456789', 1, null)")
         and:
         def userId = sql.firstRow("select user_id from users").getProperty('user_id')
         def roleId = sql.firstRow("select role_id from roles where roles.name='ROLE_ADMIN'").getProperty('role_id')
@@ -137,7 +137,7 @@ class UserControllerIntegrationTest extends Specification {
         given:
         Sql sql = new Sql(dataSource)
         and:
-        sql.execute("insert into users values(1, true, 'email@email.email', 'admin', 'password', '123456789', 1)")
+        sql.execute("insert into users values(1, true, 'email@email.email', 'admin', 'password', '123456789', 1, null)")
         and:
         def userId = sql.firstRow("select user_id from users").getProperty('user_id')
         def roleId = sql.firstRow("select role_id from roles where roles.name='ROLE_ADMIN'").getProperty('role_id')
@@ -159,7 +159,7 @@ class UserControllerIntegrationTest extends Specification {
         given:
         Sql sql = new Sql(dataSource)
         and:
-        sql.execute("insert into users values(1, true, 'email@email.email', 'login', 'password', '123456789', 1)")
+        sql.execute("insert into users values(1, true, 'email@email.email', 'login', 'password', '123456789', 1, null)")
         and:
         def userId = sql.firstRow("select user_id from users").getProperty('user_id')
         def roleId = sql.firstRow("select role_id from roles where roles.name='ROLE_ADMIN'").getProperty('role_id')

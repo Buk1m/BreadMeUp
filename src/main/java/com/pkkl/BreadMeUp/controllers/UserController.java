@@ -31,4 +31,11 @@ public class UserController {
     public void unblock(@PathVariable(name = "login") String login) {
         this.userService.unblockUser(login);
     }
+
+    @PutMapping(
+            value = "admin/users/{userId}/bakeries/{bakeryId}"
+    )
+    public void assignBakeryToUser(@PathVariable(name = "userId") Integer userId, @PathVariable(name = "bakeryId") int bakeryId) {
+        this.userService.assignBakeryToUser(userId, bakeryId);
+    }
 }

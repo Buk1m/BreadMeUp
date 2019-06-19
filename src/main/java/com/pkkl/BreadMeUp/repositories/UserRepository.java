@@ -20,4 +20,9 @@ public interface UserRepository extends JpaRepository<User, Integer> {
     @Modifying
     @Query("UPDATE User u SET u.blocked=:blocked WHERE u.login=:login")
     void setBlocked(@Param("login") String login, @Param("blocked") boolean blocked);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE User u SET u.bakery=:bakeryId WHERE u.id=:id")
+    void assignBakeryToUser(@Param("id") Integer id, @Param("bakeryId") int bakeryId);
 }

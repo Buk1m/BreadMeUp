@@ -53,7 +53,7 @@ class LoginIntegrationTest extends Specification {
         given:
         Sql sql = new Sql(dataSource)
         and:
-        sql.execute("insert into users values(1, false, 'email@email.email', 'login', :password, '123456789', 1)",
+        sql.execute("insert into users values(1, false, 'email@email.email', 'login', :password, '123456789', 1, null)",
                 [password:  passwordEncoder.encode("password")])
         and:
         def userId = sql.firstRow("select user_id from users").getProperty('user_id')
@@ -80,7 +80,7 @@ class LoginIntegrationTest extends Specification {
         given:
         Sql sql = new Sql(dataSource)
         and:
-        sql.execute("insert into users values(1, false, 'email@email.email', 'login', :password, '123456789', 1)",
+        sql.execute("insert into users values(1, false, 'email@email.email', 'login', :password, '123456789', 1, null)",
                 [password:  passwordEncoder.encode("password")])
         and:
         Map request = [
