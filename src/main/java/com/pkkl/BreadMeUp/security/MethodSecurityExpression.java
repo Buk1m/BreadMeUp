@@ -1,6 +1,5 @@
 package com.pkkl.BreadMeUp.security;
 
-import com.pkkl.BreadMeUp.security.AuthUserDetails;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 

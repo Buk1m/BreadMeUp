@@ -4,22 +4,29 @@ import com.pkkl.BreadMeUp.exceptions.ConstraintException
 import com.pkkl.BreadMeUp.exceptions.DatabaseException
 import com.pkkl.BreadMeUp.model.ProductType
 import com.pkkl.BreadMeUp.repositories.ProductTypeRepository
+import org.spockframework.spring.SpringBean
+import org.springframework.beans.factory.annotation.Autowired
+import org.springframework.boot.test.context.SpringBootTest
+import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.test.context.support.WithMockUser
+import org.springframework.test.context.ActiveProfiles
 import spock.lang.Specification
 
 import javax.validation.ConstraintViolation
 import javax.validation.ConstraintViolationException
 
+@SpringBootTest
+@ActiveProfiles("test")
 class ProductTypeServiceTest extends Specification {
 
+    @SpringBean
     private ProductTypeRepository productTypeRepository = Mock(ProductTypeRepository.class)
 
+    @Autowired
     private ProductTypeService productTypeService
 
-    def setup() {
-        this.productTypeService = new ProductTypeServiceImpl(productTypeRepository)
-    }
-
-    def "Should return object when product exists"() {
+    @WithMockUser(roles = "ADMIN")
+    def "Should return object when product exists and user is admin"() {
         given:
         ProductType productType = Mock(ProductType.class)
         and:
@@ -30,6 +37,15 @@ class ProductTypeServiceTest extends Specification {
         returnedProductType == productType
     }
 
+    @WithMockUser
+    def "Should throw AccessDeniedException when user is not admin and try getById"() {
+        when:
+        productTypeService.getById(1)
+        then:
+        thrown(AccessDeniedException.class)
+    }
+
+    @WithMockUser(roles = "ADMIN")
     def "Should throw DatabaseException when product does not exist"() {
         given:
         productTypeRepository.findById(1) >> Optional.ofNullable(null)
@@ -39,7 +55,8 @@ class ProductTypeServiceTest extends Specification {
         thrown(DatabaseException.class)
     }
 
-    def "Should return object's collection when products exist"() {
+    @WithMockUser(roles = "ADMIN")
+    def "Should return object's collection when product types exist and user is admin"() {
         given:
         ProductType productType1 = Mock(ProductType.class)
         ProductType productType2 = Mock(ProductType.class)
@@ -53,6 +70,15 @@ class ProductTypeServiceTest extends Specification {
         returnedProductTypes.contains(productType2)
     }
 
+    @WithMockUser
+    def "Should throw AccessDeniedException when user is not admin and try getAll"() {
+        when:
+        productTypeService.getAll()
+        then:
+        thrown(AccessDeniedException.class)
+    }
+
+    @WithMockUser(roles = "ADMIN")
     def "Should throw DatabaseException when repository findAll throws Exception"() {
         given:
         productTypeRepository.findAll() >> { throw new RuntimeException() }
@@ -62,7 +88,8 @@ class ProductTypeServiceTest extends Specification {
         thrown(DatabaseException.class)
     }
 
-    def "Should not throw exception when product deleted"() {
+    @WithMockUser(roles = "ADMIN")
+    def "Should not throw exception when product type deleted and user is admin"() {
         given:
         productTypeRepository.deleteById(1)
         when:
@@ -71,6 +98,15 @@ class ProductTypeServiceTest extends Specification {
         noExceptionThrown()
     }
 
+    @WithMockUser
+    def "Should throw AccessDeniedException when user is not admin and try delete"() {
+        when:
+        productTypeService.delete(1)
+        then:
+        thrown(AccessDeniedException.class)
+    }
+
+    @WithMockUser(roles = "ADMIN")
     def "Should throw DatabaseException when repository deleteById throws Exception"() {
         given:
         productTypeRepository.deleteById(1) >> { throw new RuntimeException() }
@@ -80,7 +116,8 @@ class ProductTypeServiceTest extends Specification {
         thrown(DatabaseException.class)
     }
 
-    def "Should return saved object when product has been successfully updated"() {
+    @WithMockUser(roles = "ADMIN")
+    def "Should return saved object when product type has been successfully updated and user is admin"() {
         given:
         ProductType productType = Mock(ProductType.class)
         and:
@@ -91,6 +128,17 @@ class ProductTypeServiceTest extends Specification {
         returnedProductType == productType
     }
 
+    @WithMockUser
+    def "Should throw AccessDeniedException when user is not admin and try update"() {
+        given:
+        ProductType productType = Mock(ProductType.class)
+        when:
+        this.productTypeService.update(productType)
+        then:
+        thrown(AccessDeniedException.class)
+    }
+
+    @WithMockUser(roles = "ADMIN")
     def "Should update throw ConstraintException when repository save throws ConstraintViolationException"() {
         given:
         ProductType productType = Mock(ProductType.class)
@@ -102,6 +150,7 @@ class ProductTypeServiceTest extends Specification {
         thrown(ConstraintException.class)
     }
 
+    @WithMockUser(roles = "ADMIN")
     def "Should update throw ConstraintException when repository save throws hibernate ConstraintViolationException"() {
         given:
         ProductType productType = Mock(ProductType.class)
@@ -113,6 +162,7 @@ class ProductTypeServiceTest extends Specification {
         thrown(ConstraintException.class)
     }
 
+    @WithMockUser(roles = "ADMIN")
     def "Should update throw DatabaseException when repository save throws exception"() {
         given:
         ProductType productType = Mock(ProductType.class)
@@ -124,7 +174,8 @@ class ProductTypeServiceTest extends Specification {
         thrown(DatabaseException.class)
     }
 
-    def "Should add return saved object when product has been successfully added"() {
+    @WithMockUser(roles = "ADMIN")
+    def "Should add return saved object when product has been successfully added and user is admin"() {
         given:
         ProductType productType = Mock(ProductType.class)
         and:
@@ -135,6 +186,19 @@ class ProductTypeServiceTest extends Specification {
         returnedProductType == productType
     }
 
+    @WithMockUser
+    def "Should throw AccessDeniedException when user is not admin and try to save"() {
+        given:
+        ProductType productType = Mock(ProductType.class)
+        and:
+        productTypeRepository.save(productType)
+        when:
+        this.productTypeService.add(productType)
+        then:
+        thrown(AccessDeniedException.class)
+    }
+
+    @WithMockUser(roles = "ADMIN")
     def "Should add throw ConstraintException when repository save throws ConstraintViolationException"() {
         given:
         ProductType productType = Mock(ProductType.class)
@@ -146,6 +210,7 @@ class ProductTypeServiceTest extends Specification {
         thrown(ConstraintException.class)
     }
 
+    @WithMockUser(roles = "ADMIN")
     def "Should add throw ConstraintException when repository save throws hibernate ConstraintViolationException"() {
         given:
         ProductType productType = Mock(ProductType.class)
@@ -157,6 +222,7 @@ class ProductTypeServiceTest extends Specification {
         thrown(ConstraintException.class)
     }
 
+    @WithMockUser(roles = "ADMIN")
     def "Should add throw DatabaseException when repository save throws exception"() {
         given:
         ProductType productType = Mock(ProductType.class)
