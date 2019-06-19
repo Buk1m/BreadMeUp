@@ -5,6 +5,7 @@ import io.jsonwebtoken.Jwts;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import javax.servlet.FilterChain;
@@ -19,8 +20,11 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
 
     private final JwtAuthSettings jwtAuthSettings;
 
-    public JwtTokenAuthenticationFilter(JwtAuthSettings jwtAuthSettings) {
+    private final UserDetailsService userDetailsService;
+
+    public JwtTokenAuthenticationFilter(JwtAuthSettings jwtAuthSettings, UserDetailsService userDetailsService) {
         this.jwtAuthSettings = jwtAuthSettings;
+        this.userDetailsService = userDetailsService;
     }
 
     @Override
@@ -49,7 +53,7 @@ public class JwtTokenAuthenticationFilter extends OncePerRequestFilter {
                 Integer id = (Integer) claims.get("userId");
 
                 UsernamePasswordAuthenticationToken auth = new UsernamePasswordIdAuthenticationToken(
-                        username, null,
+                        this.userDetailsService.loadUserByUsername(username), null,
                         authorities.stream().map(SimpleGrantedAuthority::new).collect(Collectors.toList()), id);
 
                 SecurityContextHolder.getContext().setAuthentication(auth);
