@@ -50,7 +50,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .exceptionHandling().authenticationEntryPoint(this.configureAuthenticationEntryPoint())
                 .and()
                 .addFilter(jwtUsernameAndPasswordAuthenticationFilter)
-                .addFilterAfter(new JwtTokenAuthenticationFilter(this.jwtAuthSettings), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new JwtTokenAuthenticationFilter(this.jwtAuthSettings, this.userService), UsernamePasswordAuthenticationFilter.class)
                 .authorizeRequests()
                 .antMatchers(HttpMethod.POST, jwtAuthSettings.getPath()).permitAll()
                 .antMatchers(HttpMethod.POST, "/registration").permitAll()
