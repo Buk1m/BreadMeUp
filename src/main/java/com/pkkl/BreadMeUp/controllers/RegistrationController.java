@@ -42,6 +42,20 @@ public class RegistrationController {
         );
     }
 
+    @PostMapping(
+            value = "/managerRegistration",
+            consumes = MediaType.APPLICATION_JSON_UTF8_VALUE,
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    @ResponseStatus(HttpStatus.CREATED)
+    public UserDetailsDto registerManager(@Valid @RequestBody UserCreateDto userCreateDto) {
+        return this.mapUserToUserDetailsDto(
+                this.userService.registerManager(
+                        this.mapUserCreateDtoToUser(userCreateDto)
+                )
+        );
+    }
+
     private User mapUserCreateDtoToUser(UserCreateDto userCreateDto) {
         return this.modelMapper.map(userCreateDto, User.class);
     }
