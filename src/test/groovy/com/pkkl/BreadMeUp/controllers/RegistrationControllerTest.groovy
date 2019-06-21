@@ -127,4 +127,95 @@ class RegistrationControllerTest extends Specification {
         results.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
         results.andExpect(jsonPath('$').exists())
     }
+
+    def "Should register manager and return created object in json with 201 response code"() {
+        given:
+        Map request = [
+                login   : 'login',
+                password: 'password',
+                email   : 'email@email.email',
+                phone   : '123456789'
+        ]
+        and:
+        this.userService.registerManager(_ as User) >> User.builder()
+                .id(1)
+                .login("login")
+                .password("password")
+                .email("email@email.email")
+                .phone("123456789")
+                .build()
+        when:
+        def results = mockMvc.perform(
+                post('/managerRegistration')
+                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                        .content(JsonOutput.toJson(request)))
+                .andDo(print())
+
+        then:
+        results.andExpect(status().isCreated())
+        results.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+        results.andExpect(jsonPath('$.id').value("1"))
+        results.andExpect(jsonPath('$.login').value("login"))
+        results.andExpect(jsonPath('$.password').doesNotExist())
+        results.andExpect(jsonPath('$.email').value('email@email.email'))
+        results.andExpect(jsonPath('$.phone').value('123456789'))
+    }
+
+    def "Should return 400 response code when manager data is empty/invalid"() {
+        given:
+        User emptyUser = new User()
+        when:
+        def results = mockMvc.perform(
+                post('/managerRegistration')
+                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                        .content(JsonOutput.toJson(emptyUser)))
+                .andDo(print())
+        then:
+        results.andExpect(status().isBadRequest())
+        results.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+    }
+
+    def "Should return 409 response code when manager service throws ConflictException"() {
+        given:
+        Map request = [
+                login   : 'login',
+                password: 'password',
+                email   : 'email@email.email',
+                phone   : '123456789'
+        ]
+        and:
+        this.userService.registerManager(_ as User) >> { u -> throw new ConstraintException() }
+        when:
+        def results = mockMvc.perform(
+                post('/managerRegistration')
+                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                        .content(JsonOutput.toJson(request)))
+                .andDo(print())
+        then:
+        results.andExpect(status().isConflict())
+        results.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+        results.andExpect(jsonPath('$').exists())
+    }
+
+    def "Should return 500 response code when manager service throws DatabaseException"() {
+        given:
+        Map request = [
+                login   : 'login',
+                password: 'password',
+                email   : 'email@email.email',
+                phone   : '123456789'
+        ]
+        and:
+        this.userService.registerManager(_ as User) >> { u -> throw new DatabaseException() }
+        when:
+        def results = mockMvc.perform(
+                post('/managerRegistration')
+                        .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
+                        .content(JsonOutput.toJson(request)))
+                .andDo(print())
+        then:
+        results.andExpect(status().isInternalServerError())
+        results.andExpect(content().contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
+        results.andExpect(jsonPath('$').exists())
+    }
 }

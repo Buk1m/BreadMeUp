@@ -1,6 +1,5 @@
 package com.pkkl.BreadMeUp.services
 
-
 import com.pkkl.BreadMeUp.exceptions.ConstraintException
 import com.pkkl.BreadMeUp.exceptions.DatabaseException
 import com.pkkl.BreadMeUp.model.Role
@@ -104,6 +103,81 @@ class UserServiceTest extends Specification {
         thrown(ConstraintException.class)
     }
 
+    def "Should return saved object when manager has been successfully registered"() {
+        given:
+        User user = User.builder()
+                .password("password")
+                .build()
+        Role role = Mock(Role.class)
+        and:
+        roleRepositoryMock.findByName("MANAGER") >> Optional.of(role)
+        userRepositoryMock.save(user) >> user
+        when:
+        User returnedUser = this.userService.registerManager(user)
+        then:
+        returnedUser == user
+    }
+
+    def "Should throw DatabaseException when manager role does not exist"() {
+        given:
+        User user = User.builder()
+                .password("password")
+                .build()
+        and:
+        roleRepositoryMock.findByName("MANAGER") >> Optional.empty()
+        when:
+        this.userService.registerManager(user)
+        then:
+        thrown(DatabaseException.class)
+    }
+
+    def "Should throw ConstraintException when repository throws InvalidDataAccessApiUsageException when registering manager"() {
+        given:
+        User user = User.builder()
+                .password("password")
+                .build()
+        Role role = Mock(Role.class)
+        and:
+        roleRepositoryMock.findByName("MANAGER") >> Optional.of(role)
+        userRepositoryMock.save(_ as User) >> { u -> throw new InvalidDataAccessApiUsageException("Message") }
+        when:
+        this.userService.registerManager(user)
+        then:
+        thrown(ConstraintException.class)
+    }
+
+    def "Should throw ConstraintException when repository throws ConstraintViolationException when registering manager"() {
+        given:
+        User user = User.builder()
+                .password("password")
+                .build()
+        Role role = Mock(Role.class)
+        and:
+        roleRepositoryMock.findByName("MANAGER") >> Optional.of(role)
+        userRepositoryMock.save(_ as User) >>
+                { u -> throw new ConstraintViolationException(new HashSet<ConstraintViolation<?>>()) }
+        when:
+        this.userService.registerManager(user)
+        then:
+        thrown(ConstraintException.class)
+    }
+
+    def "Should throw ConstraintException when repository throws exception caused by ConstraintViolationException when registering manager"() {
+        given:
+        User user = User.builder()
+                .password("password")
+                .build()
+        Role role = Mock(Role.class)
+        and:
+        roleRepositoryMock.findByName("MANAGER") >> Optional.of(role)
+        userRepositoryMock.save(_ as User) >>
+                { u -> throw new RuntimeException(new org.hibernate.exception.ConstraintViolationException(null, null, null)) }
+        when:
+        this.userService.registerManager(user)
+        then:
+        thrown(ConstraintException.class)
+    }
+
     def "Should not throw exception when block method from repository does not throw exception"() {
         when:
         this.userService.blockUser("login")
@@ -142,6 +216,27 @@ class UserServiceTest extends Specification {
         }
         when:
         this.userService.unblockUser("login")
+        then:
+        thrown(DatabaseException.class)
+    }
+
+    def "Should not throw exception when assign bakery to user method from repository does not throw exception"() {
+        when:
+        this.userService.assignBakeryToUser(0, 0)
+        then:
+        1 * this.userRepositoryMock.assignBakeryToUser(0, 0)
+        and:
+        notThrown(Exception.class)
+    }
+
+    def "Should throw DatabaseException when assign bakery to user method from repository throws exception"() {
+        given:
+        this.userRepositoryMock.assignBakeryToUser(0, 0) >> {
+            ->
+            throw new RuntimeException()
+        }
+        when:
+        this.userService.assignBakeryToUser(0, 0)
         then:
         thrown(DatabaseException.class)
     }

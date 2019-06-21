@@ -8,6 +8,9 @@ public interface UserService extends UserDetailsService {
 
     User register(User user);
 
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    User registerManager(User user);
+
     @PreAuthorize("hasRole('ROLE_ADMIN') && !principal.username.equals(#login)")
     void blockUser(String login);
 
