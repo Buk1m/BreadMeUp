@@ -248,7 +248,7 @@ class ProductControllerTest extends Specification {
         }
         when:
         def results = mockMvc.perform(
-                post('/products')
+                post('/manager/products')
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                         .content(JsonOutput.toJson(productDto)))
                 .andDo(print())
@@ -265,7 +265,7 @@ class ProductControllerTest extends Specification {
 
         when:
         def results = mockMvc.perform(
-                post('/products')
+                post('/manager/products')
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                         .content(JsonOutput.toJson(productDto)))
                 .andDo(print())
@@ -295,7 +295,7 @@ class ProductControllerTest extends Specification {
         this.productService.add(_ as Product) >> { throw new DatabaseException() }
         when:
         def results = mockMvc.perform(
-                post('/products')
+                post('/manager/products')
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                         .content(JsonOutput.toJson(productDto)))
                 .andDo(print())
@@ -328,7 +328,7 @@ class ProductControllerTest extends Specification {
         }
         when:
         def results = mockMvc.perform(
-                put('/products/1')
+                put('/manager/products/1')
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                         .content(JsonOutput.toJson(productDto)))
                 .andDo(print())
@@ -345,7 +345,7 @@ class ProductControllerTest extends Specification {
 
         when:
         def results = mockMvc.perform(
-                put('/products/1')
+                put('/manager/products/1')
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                         .content(JsonOutput.toJson(productDto)))
                 .andDo(print())
@@ -375,7 +375,7 @@ class ProductControllerTest extends Specification {
         this.productService.update(_ as Product) >> { throw new DatabaseException() }
         when:
         def results = mockMvc.perform(
-                put('/products/1')
+                put('/manager/products/1')
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                         .content(JsonOutput.toJson(productDto)))
                 .andDo(print())
@@ -387,21 +387,21 @@ class ProductControllerTest extends Specification {
     def "Should return 204 when object deleted"() {
         when:
         def results = mockMvc.perform(
-                delete('/products/1')
+                delete('/manager/products/1')
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andDo(print())
         then:
         results.andExpect(status().isNoContent())
         and:
-        1 * this.productService.delete(1)
+        1 * this.productService.delete(1, null)
     }
 
     def "Should return 500 when product service delete throws DatabaseException"() {
         given:
-        this.productService.delete(1) >> { _ -> throw new DatabaseException() }
+        this.productService.delete(1, null) >> { _ -> throw new DatabaseException() }
         when:
         def results = mockMvc.perform(
-                delete('/products/1')
+                delete('/manager/products/1')
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andDo(print())
         then:

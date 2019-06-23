@@ -10,11 +10,11 @@ import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/products")
 public class ProductController {
 
     private final ProductService productService;
@@ -28,7 +28,7 @@ public class ProductController {
     }
 
     @GetMapping(
-            value = "/{id}",
+            value = "/products/{id}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseStatus(HttpStatus.OK)
@@ -39,7 +39,7 @@ public class ProductController {
     }
 
     @GetMapping(
-            value = "",
+            value = "/products",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseStatus(HttpStatus.OK)
@@ -50,16 +50,16 @@ public class ProductController {
     }
 
     @DeleteMapping(
-            value = "/{id}",
+            value = "/manager/products/{id}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void delete(@PathVariable(name = "id") int id) {
-        productService.delete(id);
+    public void delete(@PathVariable(name = "id") int id, Principal principal) {
+        productService.delete(id, principal);
     }
 
     @PutMapping(
-            value = "/{id}",
+            value = "/manager/products/{id}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.OK)
@@ -73,7 +73,7 @@ public class ProductController {
     }
 
     @PostMapping(
-            value = "",
+            value = "/manager/products",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
@@ -86,7 +86,7 @@ public class ProductController {
     }
 
     @GetMapping(
-            value = "bakeries/{bakeryId}",
+            value = "/products/bakeries/{bakeryId}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseStatus(HttpStatus.OK)
@@ -98,7 +98,7 @@ public class ProductController {
 
 
     @GetMapping(
-            value = "categories/{categoryId}",
+            value = "/products/categories/{categoryId}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseStatus(HttpStatus.OK)
@@ -109,7 +109,7 @@ public class ProductController {
     }
 
     @GetMapping(
-            value = "bakeries/{bakeryId}/categories/{categoryId}",
+            value = "/products/bakeries/{bakeryId}/categories/{categoryId}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseStatus(HttpStatus.OK)

@@ -5,7 +5,11 @@ import com.pkkl.BreadMeUp.exceptions.DatabaseException
 import com.pkkl.BreadMeUp.model.Bakery
 import com.pkkl.BreadMeUp.model.Category
 import com.pkkl.BreadMeUp.model.Product
+import com.pkkl.BreadMeUp.model.User
 import com.pkkl.BreadMeUp.repositories.ProductRepository
+import com.pkkl.BreadMeUp.security.AuthUserDetails
+import org.springframework.security.access.AccessDeniedException
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken
 import spock.lang.Specification
 
 import javax.validation.ConstraintViolation
@@ -57,7 +61,7 @@ class ProductServiceTest extends Specification {
 
     def "Should throw DatabaseException when repository findAll throws Exception"() {
         given:
-        productRepository.findAll() >> {throw new RuntimeException()}
+        productRepository.findAll() >> { throw new RuntimeException() }
         when:
         productService.getAll()
         then:
@@ -66,18 +70,60 @@ class ProductServiceTest extends Specification {
 
     def "Should not throw exception when product deleted"() {
         given:
+        Bakery bakery = Bakery.builder()
+                .id(1)
+                .build()
+        Product product = Product.builder()
+                .bakery(bakery)
+                .build()
+        User user = User.builder()
+                .bakery(bakery)
+                .build()
+        AuthUserDetails authUserDetails = new AuthUserDetails(user)
+        UsernamePasswordAuthenticationToken token =
+                new UsernamePasswordAuthenticationToken(authUserDetails, null, null)
+        and:
+        productRepository.findById(1) >> Optional.of(product)
+        and:
         productRepository.deleteById(1)
         when:
-        productService.delete(1)
+        productService.delete(1, token)
         then:
         noExceptionThrown()
     }
 
+    def "Should throw AccessDeniedException when product deleted and product does not belong to manager bakery"() {
+        given:
+        Bakery bakery1 = Bakery.builder()
+                .id(1)
+                .build()
+        Bakery bakery2 = Bakery.builder()
+                .id(2)
+                .build()
+        Product product = Product.builder()
+                .bakery(bakery1)
+                .build()
+        User user = User.builder()
+                .bakery(bakery2)
+                .build()
+        AuthUserDetails authUserDetails = new AuthUserDetails(user)
+        UsernamePasswordAuthenticationToken token =
+                new UsernamePasswordAuthenticationToken(authUserDetails, null, null)
+        and:
+        productRepository.findById(1) >> Optional.of(product)
+        and:
+        productRepository.deleteById(1)
+        when:
+        productService.delete(1, token)
+        then:
+        thrown(AccessDeniedException.class)
+    }
+
     def "Should throw DatabaseException when repository deleteById throws Exception"() {
         given:
-        productRepository.deleteById(1) >> { throw new RuntimeException()}
+        productRepository.deleteById(1) >> { throw new RuntimeException() }
         when:
-        productService.delete(1)
+        productService.delete(1, null)
         then:
         thrown(DatabaseException.class)
     }
@@ -187,7 +233,7 @@ class ProductServiceTest extends Specification {
 
     def "Should getByBakery throw DatabaseException when repository thrown exception"() {
         given:
-        productRepository.findAll() >> {throw new RuntimeException()}
+        productRepository.findAll() >> { throw new RuntimeException() }
         when:
         this.productService.getByBakery(1)
         then:
@@ -211,7 +257,7 @@ class ProductServiceTest extends Specification {
 
     def "Should getByCategory throw DatabaseException when repository thrown exception"() {
         given:
-        productRepository.findAll() >> {throw new RuntimeException()}
+        productRepository.findAll() >> { throw new RuntimeException() }
         when:
         this.productService.getByCategory(1)
         then:
@@ -237,9 +283,9 @@ class ProductServiceTest extends Specification {
 
     def "Should getByCategoryAndBakery throw DatabaseException when repository thrown exception"() {
         given:
-        productRepository.findAll() >> {throw new RuntimeException()}
+        productRepository.findAll() >> { throw new RuntimeException() }
         when:
-        this.productService.getByCategoryAndBakery(1,1)
+        this.productService.getByCategoryAndBakery(1, 1)
         then:
         thrown(DatabaseException.class)
     }
