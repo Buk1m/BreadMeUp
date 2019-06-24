@@ -2,10 +2,7 @@ package com.pkkl.BreadMeUp.services
 
 import com.pkkl.BreadMeUp.exceptions.ConstraintException
 import com.pkkl.BreadMeUp.exceptions.DatabaseException
-import com.pkkl.BreadMeUp.model.Bakery
-import com.pkkl.BreadMeUp.model.Category
-import com.pkkl.BreadMeUp.model.Product
-import com.pkkl.BreadMeUp.model.User
+import com.pkkl.BreadMeUp.model.*
 import com.pkkl.BreadMeUp.repositories.ProductRepository
 import com.pkkl.BreadMeUp.security.AuthUserDetails
 import org.springframework.security.access.AccessDeniedException
@@ -19,10 +16,18 @@ class ProductServiceTest extends Specification {
 
     private ProductRepository productRepository = Mock(ProductRepository.class)
 
+    private BakeryService bakeryService = Mock(BakeryService.class)
+
+    private CategoryService categoryService = Mock(CategoryService.class)
+
+    private ProductTypeService productTypeService = Mock(ProductTypeService.class)
+
+    private ProductAvailabilityService productAvailabilityService = Mock(ProductAvailabilityService.class)
+
     private ProductService productService
 
     def setup() {
-        this.productService = new ProductServiceImpl(productRepository)
+        this.productService = new ProductServiceImpl(productRepository, bakeryService, categoryService, productTypeService, productAvailabilityService)
     }
 
     def "Should return object when product exists"() {
@@ -130,7 +135,31 @@ class ProductServiceTest extends Specification {
 
     def "Should return saved object when product has been successfully updated"() {
         given:
-        Product product = Mock(Product.class)
+        Bakery bakery = Bakery.builder()
+                .id(1)
+                .build()
+        Category category = Category.builder()
+                .id(1)
+                .build()
+        ProductType productType = ProductType.builder()
+                .id(1)
+                .build()
+        List<ProductAvailability> productAvailabilities = List.of(ProductAvailability.builder()
+                .id(1)
+                .build())
+        and:
+        this.bakeryService.getById(_ as Integer) >> bakery
+        this.categoryService.getById(_ as Integer) >> category
+        this.productTypeService.getById(_ as Integer) >> productType
+        this.productAvailabilityService.getAllByProduct(_ as Integer) >> productAvailabilities
+        and:
+        Product product = Product.builder()
+                .id(1)
+                .bakery(bakery)
+                .category(category)
+                .productType(productType)
+                .productAvailability(productAvailabilities)
+                .build()
         and:
         productRepository.save(product) >> product
         when:
@@ -141,7 +170,31 @@ class ProductServiceTest extends Specification {
 
     def "Should update throw ConstraintException when repository save throws ConstraintViolationException"() {
         given:
-        Product product = Mock(Product.class)
+        Bakery bakery = Bakery.builder()
+                .id(1)
+                .build()
+        Category category = Category.builder()
+                .id(1)
+                .build()
+        ProductType productType = ProductType.builder()
+                .id(1)
+                .build()
+        List<ProductAvailability> productAvailabilities = List.of(ProductAvailability.builder()
+                .id(1)
+                .build())
+        and:
+        this.bakeryService.getById(_ as Integer) >> bakery
+        this.categoryService.getById(_ as Integer) >> category
+        this.productTypeService.getById(_ as Integer) >> productType
+        this.productAvailabilityService.getAllByProduct(_ as Integer) >> productAvailabilities
+        and:
+        Product product = Product.builder()
+                .id(1)
+                .bakery(bakery)
+                .category(category)
+                .productType(productType)
+                .productAvailability(productAvailabilities)
+                .build()
         and:
         productRepository.save(_ as Product) >> { p -> throw new ConstraintViolationException(new HashSet<ConstraintViolation<?>>()) }
         when:
@@ -152,7 +205,31 @@ class ProductServiceTest extends Specification {
 
     def "Should update throw ConstraintException when repository save throws hibernate ConstraintViolationException"() {
         given:
-        Product product = Mock(Product.class)
+        Bakery bakery = Bakery.builder()
+                .id(1)
+                .build()
+        Category category = Category.builder()
+                .id(1)
+                .build()
+        ProductType productType = ProductType.builder()
+                .id(1)
+                .build()
+        List<ProductAvailability> productAvailabilities = List.of(ProductAvailability.builder()
+                .id(1)
+                .build())
+        and:
+        this.bakeryService.getById(_ as Integer) >> bakery
+        this.categoryService.getById(_ as Integer) >> category
+        this.productTypeService.getById(_ as Integer) >> productType
+        this.productAvailabilityService.getAllByProduct(_ as Integer) >> productAvailabilities
+        and:
+        Product product = Product.builder()
+                .id(1)
+                .bakery(bakery)
+                .category(category)
+                .productType(productType)
+                .productAvailability(productAvailabilities)
+                .build()
         and:
         productRepository.save(_ as Product) >> { p -> throw new RuntimeException(new org.hibernate.exception.ConstraintViolationException(null, null, null)) }
         when:
@@ -163,7 +240,31 @@ class ProductServiceTest extends Specification {
 
     def "Should update throw DatabaseException when repository save throws exception"() {
         given:
-        Product product = Mock(Product.class)
+        Bakery bakery = Bakery.builder()
+                .id(1)
+                .build()
+        Category category = Category.builder()
+                .id(1)
+                .build()
+        ProductType productType = ProductType.builder()
+                .id(1)
+                .build()
+        List<ProductAvailability> productAvailabilities = List.of(ProductAvailability.builder()
+                .id(1)
+                .build())
+        and:
+        this.bakeryService.getById(_ as Integer) >> bakery
+        this.categoryService.getById(_ as Integer) >> category
+        this.productTypeService.getById(_ as Integer) >> productType
+        this.productAvailabilityService.getAllByProduct(_ as Integer) >> productAvailabilities
+        and:
+        Product product = Product.builder()
+                .id(1)
+                .bakery(bakery)
+                .category(category)
+                .productType(productType)
+                .productAvailability(productAvailabilities)
+                .build()
         and:
         productRepository.save(_ as Product) >> { p -> throw new RuntimeException("message") }
         when:
@@ -174,7 +275,26 @@ class ProductServiceTest extends Specification {
 
     def "Should add return saved object when product has been successfully added"() {
         given:
-        Product product = Mock(Product.class)
+        Bakery bakery = Bakery.builder()
+                .id(1)
+                .build()
+        Category category = Category.builder()
+                .id(1)
+                .build()
+        ProductType productType = ProductType.builder()
+                .id(1)
+                .build()
+        and:
+        this.bakeryService.getById(_ as Integer) >> bakery
+        this.categoryService.getById(_ as Integer) >> category
+        this.productTypeService.getById(_ as Integer) >> productType
+        and:
+        Product product = Product.builder()
+                .id(1)
+                .bakery(bakery)
+                .category(category)
+                .productType(productType)
+                .build()
         and:
         productRepository.save(product) >> product
         when:
@@ -185,7 +305,26 @@ class ProductServiceTest extends Specification {
 
     def "Should add throw ConstraintException when repository save throws ConstraintViolationException"() {
         given:
-        Product product = Mock(Product.class)
+        Bakery bakery = Bakery.builder()
+                .id(1)
+                .build()
+        Category category = Category.builder()
+                .id(1)
+                .build()
+        ProductType productType = ProductType.builder()
+                .id(1)
+                .build()
+        and:
+        this.bakeryService.getById(_ as Integer) >> bakery
+        this.categoryService.getById(_ as Integer) >> category
+        this.productTypeService.getById(_ as Integer) >> productType
+        and:
+        Product product = Product.builder()
+                .id(1)
+                .bakery(bakery)
+                .category(category)
+                .productType(productType)
+                .build()
         and:
         productRepository.save(_ as Product) >> { p -> throw new ConstraintViolationException(new HashSet<ConstraintViolation<?>>()) }
         when:
@@ -196,7 +335,26 @@ class ProductServiceTest extends Specification {
 
     def "Should add throw ConstraintException when repository save throws hibernate ConstraintViolationException"() {
         given:
-        Product product = Mock(Product.class)
+        Bakery bakery = Bakery.builder()
+                .id(1)
+                .build()
+        Category category = Category.builder()
+                .id(1)
+                .build()
+        ProductType productType = ProductType.builder()
+                .id(1)
+                .build()
+        and:
+        this.bakeryService.getById(_ as Integer) >> bakery
+        this.categoryService.getById(_ as Integer) >> category
+        this.productTypeService.getById(_ as Integer) >> productType
+        and:
+        Product product = Product.builder()
+                .id(1)
+                .bakery(bakery)
+                .category(category)
+                .productType(productType)
+                .build()
         and:
         productRepository.save(_ as Product) >> { p -> throw new RuntimeException(new org.hibernate.exception.ConstraintViolationException(null, null, null)) }
         when:
@@ -207,7 +365,31 @@ class ProductServiceTest extends Specification {
 
     def "Should add throw DatabaseException when repository save throws exception"() {
         given:
-        Product product = Mock(Product.class)
+        Bakery bakery = Bakery.builder()
+                .id(1)
+                .build()
+        Category category = Category.builder()
+                .id(1)
+                .build()
+        ProductType productType = ProductType.builder()
+                .id(1)
+                .build()
+        List<ProductAvailability> productAvailabilities = List.of(ProductAvailability.builder()
+                .id(1)
+                .build())
+        and:
+        this.bakeryService.getById(_ as Integer) >> bakery
+        this.categoryService.getById(_ as Integer) >> category
+        this.productTypeService.getById(_ as Integer) >> productType
+        this.productAvailabilityService.getAllByProduct(_ as Integer) >> productAvailabilities
+        and:
+        Product product = Product.builder()
+                .id(1)
+                .bakery(bakery)
+                .category(category)
+                .productType(productType)
+                .productAvailability(productAvailabilities)
+                .build()
         and:
         productRepository.save(_ as Product) >> { p -> throw new RuntimeException("message") }
         when:

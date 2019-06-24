@@ -25,8 +25,7 @@ class ProductTypeServiceTest extends Specification {
     @Autowired
     private ProductTypeService productTypeService
 
-    @WithMockUser(roles = "ADMIN")
-    def "Should return object when product exists and user is admin"() {
+    def "Should return object when product exists"() {
         given:
         ProductType productType = Mock(ProductType.class)
         and:
@@ -35,14 +34,6 @@ class ProductTypeServiceTest extends Specification {
         ProductType returnedProductType = productTypeService.getById(1)
         then:
         returnedProductType == productType
-    }
-
-    @WithMockUser
-    def "Should throw AccessDeniedException when user is not admin and try getById"() {
-        when:
-        productTypeService.getById(1)
-        then:
-        thrown(AccessDeniedException.class)
     }
 
     @WithMockUser(roles = "ADMIN")
@@ -55,8 +46,7 @@ class ProductTypeServiceTest extends Specification {
         thrown(DatabaseException.class)
     }
 
-    @WithMockUser(roles = "ADMIN")
-    def "Should return object's collection when product types exist and user is admin"() {
+    def "Should return object's collection when product types exist"() {
         given:
         ProductType productType1 = Mock(ProductType.class)
         ProductType productType2 = Mock(ProductType.class)
@@ -68,14 +58,6 @@ class ProductTypeServiceTest extends Specification {
         returnedProductTypes.size() == 2
         returnedProductTypes.contains(productType1)
         returnedProductTypes.contains(productType2)
-    }
-
-    @WithMockUser
-    def "Should throw AccessDeniedException when user is not admin and try getAll"() {
-        when:
-        productTypeService.getAll()
-        then:
-        thrown(AccessDeniedException.class)
     }
 
     @WithMockUser(roles = "ADMIN")

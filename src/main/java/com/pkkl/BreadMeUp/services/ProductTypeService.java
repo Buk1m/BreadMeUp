@@ -8,10 +8,8 @@ import java.util.List;
 
 public interface ProductTypeService {
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     ProductType getById(int id);
 
-    @PreAuthorize("hasRole('ROLE_ADMIN')")
     List<ProductType> getAll();
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")

@@ -26,4 +26,13 @@ public class CategoryServiceImpl implements CategoryService {
             throw new DatabaseException(e);
         }
     }
+
+    @Override
+    public Category getById(int id) {
+        try {
+            return this.categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Category type doesn't exist"));
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
+    }
 }

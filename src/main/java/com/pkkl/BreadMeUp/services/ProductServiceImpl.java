@@ -2,7 +2,7 @@ package com.pkkl.BreadMeUp.services;
 
 import com.pkkl.BreadMeUp.exceptions.ConstraintException;
 import com.pkkl.BreadMeUp.exceptions.DatabaseException;
-import com.pkkl.BreadMeUp.model.Product;
+import com.pkkl.BreadMeUp.model.*;
 import com.pkkl.BreadMeUp.repositories.ProductRepository;
 import com.pkkl.BreadMeUp.security.AuthUserDetails;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.ConstraintViolationException;
 import java.security.Principal;
@@ -20,11 +21,26 @@ import java.util.stream.Collectors;
 
 @Service
 public class ProductServiceImpl implements ProductService {
+
     private final ProductRepository productRepository;
 
+    private final BakeryService bakeryService;
+
+    private final CategoryService categoryService;
+
+    private final ProductTypeService productTypeService;
+
+    private final ProductAvailabilityService productAvailabilityService;
+
     @Autowired
-    public ProductServiceImpl(ProductRepository productRepository) {
+    public ProductServiceImpl(ProductRepository productRepository, BakeryService bakeryService,
+                              CategoryService categoryService, ProductTypeService productTypeService,
+                              ProductAvailabilityService productAvailabilityService) {
         this.productRepository = productRepository;
+        this.bakeryService = bakeryService;
+        this.categoryService = categoryService;
+        this.productTypeService = productTypeService;
+        this.productAvailabilityService = productAvailabilityService;
     }
 
     @Override
@@ -73,14 +89,53 @@ public class ProductServiceImpl implements ProductService {
         return (AuthUserDetails) token.getPrincipal();
     }
 
+    @Transactional
     @Override
     public Product update(final Product product) {
-        return saveOrUpdate(product);
+        try {
+            this.setBakeryCategoryProductTypeForProduct(product);
+
+            List<ProductAvailability> productAvailabilities = this.productAvailabilityService.getAllByProduct(product.getId());
+            productAvailabilities.forEach(pa -> pa.setProduct(product));
+            product.setProductAvailability(productAvailabilities);
+
+            return productRepository.save(product);
+        } catch (ConstraintViolationException e) {
+            throw new ConstraintException(e.getConstraintViolations().toString(), e);
+        } catch (Exception e) {
+            if (e.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
+                throw new ConstraintException(e.getMessage(), e);
+            }
+            throw new DatabaseException(e.getMessage(), e);
+        }
     }
 
+    @Transactional
     @Override
     public Product add(final Product product) {
-        return saveOrUpdate(product);
+        try {
+            this.setBakeryCategoryProductTypeForProduct(product);
+
+            return productRepository.save(product);
+        } catch (ConstraintViolationException e) {
+            throw new ConstraintException(e.getConstraintViolations().toString(), e);
+        } catch (Exception e) {
+            if (e.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
+                throw new ConstraintException(e.getMessage(), e);
+            }
+            throw new DatabaseException(e.getMessage(), e);
+        }
+    }
+
+    private void setBakeryCategoryProductTypeForProduct(Product product) {
+        Bakery bakery = this.bakeryService.getById(product.getBakery().getId());
+        Category category = this.categoryService.getById(product.getCategory().getId());
+        ProductType productType = this.productTypeService.getById(product.getProductType().getId());
+
+
+        product.setBakery(bakery);
+        product.setCategory(category);
+        product.setProductType(productType);
     }
 
     @Override
@@ -113,19 +168,6 @@ public class ProductServiceImpl implements ProductService {
                     .filter(p -> containsCategory(p, categoryId))
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            throw new DatabaseException(e.getMessage(), e);
-        }
-    }
-
-    private Product saveOrUpdate(final Product product) {
-        try {
-            return productRepository.save(product);
-        } catch (ConstraintViolationException e) {
-            throw new ConstraintException(e.getConstraintViolations().toString(), e);
-        } catch (Exception e) {
-            if (e.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
-                throw new ConstraintException(e.getMessage(), e);
-            }
             throw new DatabaseException(e.getMessage(), e);
         }
     }

@@ -4,6 +4,7 @@ import com.pkkl.BreadMeUp.model.ProductAvailability;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.time.LocalDate;
+import java.util.List;
 
 public interface ProductAvailabilityService {
 
@@ -16,4 +17,6 @@ public interface ProductAvailabilityService {
     ProductAvailability add(final ProductAvailability productAvailability);
 
     ProductAvailability getByDateAndProduct(final LocalDate date, final int productId);
+
+    List<ProductAvailability> getAllByProduct(final int productId);
 }
