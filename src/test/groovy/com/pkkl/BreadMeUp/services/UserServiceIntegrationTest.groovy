@@ -16,7 +16,7 @@ import javax.sql.DataSource
 @SpringBootTest
 @ActiveProfiles("test")
 @org.springframework.test.context.jdbc.Sql(scripts = "/clear.sql",
-        executionPhase = org.springframework.test.context.jdbc.Sql.ExecutionPhase.AFTER_TEST_METHOD)
+        executionPhase = org.springframework.test.context.jdbc.Sql.ExecutionPhase.BEFORE_TEST_METHOD)
 class UserServiceIntegrationTest extends Specification {
 
     @Autowired
