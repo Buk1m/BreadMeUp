@@ -2,15 +2,17 @@ package com.pkkl.BreadMeUp.services;
 
 import com.pkkl.BreadMeUp.exceptions.ConstraintException;
 import com.pkkl.BreadMeUp.exceptions.DatabaseException;
-import com.pkkl.BreadMeUp.model.Bakery;
-import com.pkkl.BreadMeUp.model.Category;
 import com.pkkl.BreadMeUp.model.Product;
 import com.pkkl.BreadMeUp.repositories.ProductRepository;
+import com.pkkl.BreadMeUp.security.AuthUserDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.AccessDeniedException;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolationException;
+import java.security.Principal;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,7 +31,7 @@ public class ProductServiceImpl implements ProductService {
     public Product getById(final int id) {
         try {
             return productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product doesn't exist \\U+1F635"));
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new DatabaseException(e.getMessage(), e);
         }
     }
@@ -38,18 +40,37 @@ public class ProductServiceImpl implements ProductService {
     public List<Product> getAll() {
         try {
             return productRepository.findAll();
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new DatabaseException(e.getMessage(), e);
         }
     }
 
     @Override
-    public void delete(final int id) {
+    public void delete(final int id, Principal principal) {
         try {
-            productRepository.deleteById(id);
-        } catch (Exception e){
+            this.productRepository.findById(id)
+                    .ifPresent(
+                            (product) -> {
+                                if (this.getBakeryIdFromPrincipal(principal) != product.getBakery().getId()) {
+                                    throw new AccessDeniedException("User is not this bakery manager");
+                                }
+                                productRepository.deleteById(id);
+                            }
+                    );
+        } catch (AccessDeniedException e) {
+            throw e;
+        } catch (Exception e) {
             throw new DatabaseException(e.getMessage(), e);
         }
+    }
+
+    private int getBakeryIdFromPrincipal(Principal principal) {
+        return this.getAuthUserDetails(principal).getUser().getBakery().getId();
+    }
+
+    private AuthUserDetails getAuthUserDetails(Principal principal) {
+        UsernamePasswordAuthenticationToken token = (UsernamePasswordAuthenticationToken) principal;
+        return (AuthUserDetails) token.getPrincipal();
     }
 
     @Override
@@ -68,7 +89,7 @@ public class ProductServiceImpl implements ProductService {
             return productRepository.findAll().stream()
                     .filter(p -> containsBakery(p, bakeryId))
                     .collect(Collectors.toList());
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new DatabaseException(e.getMessage(), e);
         }
     }
@@ -79,7 +100,7 @@ public class ProductServiceImpl implements ProductService {
             return productRepository.findAll().stream()
                     .filter(p -> containsCategory(p, categoryId))
                     .collect(Collectors.toList());
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new DatabaseException(e.getMessage(), e);
         }
     }
@@ -91,12 +112,12 @@ public class ProductServiceImpl implements ProductService {
                     .filter(p -> containsBakery(p, bakeryId))
                     .filter(p -> containsCategory(p, categoryId))
                     .collect(Collectors.toList());
-        } catch (Exception e){
+        } catch (Exception e) {
             throw new DatabaseException(e.getMessage(), e);
         }
     }
 
-    private Product saveOrUpdate(final Product product){
+    private Product saveOrUpdate(final Product product) {
         try {
             return productRepository.save(product);
         } catch (ConstraintViolationException e) {
@@ -109,11 +130,11 @@ public class ProductServiceImpl implements ProductService {
         }
     }
 
-    private boolean containsBakery(final Product product, final int bakeryId){
+    private boolean containsBakery(final Product product, final int bakeryId) {
         return product.getBakery().getId() == bakeryId;
     }
 
-    private boolean containsCategory(final Product product, final int categoryId){
+    private boolean containsCategory(final Product product, final int categoryId) {
         return product.getCategory().getId() == categoryId;
     }
 }
