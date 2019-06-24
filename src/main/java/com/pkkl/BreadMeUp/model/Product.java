@@ -10,7 +10,6 @@ import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import java.util.List;
-import java.util.Set;
 
 @Data
 @AllArgsConstructor
@@ -41,17 +40,16 @@ public class Product {
     @Column(name = "active")
     private boolean active;
 
-    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(optional = false)
     private Bakery bakery;
 
-    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(optional = false)
     private Category category;
 
-    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(optional = false)
     private ProductType productType;
 
-    @OneToMany
-    @JoinColumn(name = "availability_id")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "product")
     private List<ProductAvailability> productAvailability;
 
     @Version

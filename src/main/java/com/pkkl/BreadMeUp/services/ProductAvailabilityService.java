@@ -10,10 +10,10 @@ public interface ProductAvailabilityService {
 
     ProductAvailability getById(int id);
 
-    @PreAuthorize("hasRole('ROLE_MANAGER') && @methodSecurityExpression.isThisBakeryManager(principal, #productAvailability.product.bakery.id)")
+    @PreAuthorize("hasRole('ROLE_MANAGER') && @methodSecurityExpression.isThisProductManager(principal, #productAvailability.product.id)")
     ProductAvailability update(final ProductAvailability productAvailability);
 
-    @PreAuthorize("hasRole('ROLE_MANAGER') && @methodSecurityExpression.isThisBakeryManager(principal, #productAvailability.product.bakery.id)")
+    @PreAuthorize("hasRole('ROLE_MANAGER') && @methodSecurityExpression.isThisProductManager(principal, #productAvailability.product.id)")
     ProductAvailability add(final ProductAvailability productAvailability);
 
     ProductAvailability getByDateAndProduct(final LocalDate date, final int productId);
