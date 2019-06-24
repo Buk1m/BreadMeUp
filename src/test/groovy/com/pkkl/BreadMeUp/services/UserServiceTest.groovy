@@ -110,7 +110,7 @@ class UserServiceTest extends Specification {
                 .build()
         Role role = Mock(Role.class)
         and:
-        roleRepositoryMock.findByName("MANAGER") >> Optional.of(role)
+        roleRepositoryMock.findByName("ROLE_MANAGER") >> Optional.of(role)
         userRepositoryMock.save(user) >> user
         when:
         User returnedUser = this.userService.registerManager(user)
@@ -124,7 +124,7 @@ class UserServiceTest extends Specification {
                 .password("password")
                 .build()
         and:
-        roleRepositoryMock.findByName("MANAGER") >> Optional.empty()
+        roleRepositoryMock.findByName("ROLE_MANAGER") >> Optional.empty()
         when:
         this.userService.registerManager(user)
         then:
@@ -138,7 +138,7 @@ class UserServiceTest extends Specification {
                 .build()
         Role role = Mock(Role.class)
         and:
-        roleRepositoryMock.findByName("MANAGER") >> Optional.of(role)
+        roleRepositoryMock.findByName("ROLE_MANAGER") >> Optional.of(role)
         userRepositoryMock.save(_ as User) >> { u -> throw new InvalidDataAccessApiUsageException("Message") }
         when:
         this.userService.registerManager(user)
@@ -153,7 +153,7 @@ class UserServiceTest extends Specification {
                 .build()
         Role role = Mock(Role.class)
         and:
-        roleRepositoryMock.findByName("MANAGER") >> Optional.of(role)
+        roleRepositoryMock.findByName("ROLE_MANAGER") >> Optional.of(role)
         userRepositoryMock.save(_ as User) >>
                 { u -> throw new ConstraintViolationException(new HashSet<ConstraintViolation<?>>()) }
         when:
@@ -169,7 +169,7 @@ class UserServiceTest extends Specification {
                 .build()
         Role role = Mock(Role.class)
         and:
-        roleRepositoryMock.findByName("MANAGER") >> Optional.of(role)
+        roleRepositoryMock.findByName("ROLE_MANAGER") >> Optional.of(role)
         userRepositoryMock.save(_ as User) >>
                 { u -> throw new RuntimeException(new org.hibernate.exception.ConstraintViolationException(null, null, null)) }
         when:
