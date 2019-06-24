@@ -23,6 +23,6 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     @Transactional
     @Modifying
-    @Query("UPDATE User u SET u.bakery=:bakeryId WHERE u.id=:id")
+    @Query("UPDATE User u SET u.bakery.id=:bakeryId WHERE u.id=:id")
     void assignBakeryToUser(@Param("id") Integer id, @Param("bakeryId") int bakeryId);
 }
