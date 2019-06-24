@@ -9,6 +9,7 @@ import org.hibernate.validator.constraints.Length;
 import javax.persistence.*;
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -51,7 +52,7 @@ public class Product {
 
     @OneToMany
     @JoinColumn(name = "availability_id")
-    private Set<ProductAvailability> productAvailability;
+    private List<ProductAvailability> productAvailability;
 
     @Version
     @Column(name = "version")

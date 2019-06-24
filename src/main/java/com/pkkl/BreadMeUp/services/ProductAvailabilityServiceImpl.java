@@ -65,6 +65,17 @@ public class ProductAvailabilityServiceImpl implements ProductAvailabilityServic
         }
     }
 
+    @Override
+    public List<ProductAvailability> getAllByProduct(int productId) {
+        try {
+            return productAvailabilityRepository.findAll().stream()
+                    .filter(p -> contains(p, productId))
+                    .collect(Collectors.toList());
+        } catch (Exception e) {
+            throw new DatabaseException(e.getMessage(), e);
+        }
+    }
+
     private ProductAvailability saveOrUpdate(final ProductAvailability productAvailability) {
         try {
             return productAvailabilityRepository.save(productAvailability);
