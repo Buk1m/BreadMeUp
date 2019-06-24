@@ -3,6 +3,7 @@ package com.pkkl.BreadMeUp.services
 import com.pkkl.BreadMeUp.exceptions.ConstraintException
 import com.pkkl.BreadMeUp.exceptions.DatabaseException
 import com.pkkl.BreadMeUp.model.*
+import com.pkkl.BreadMeUp.repositories.ProductAvailabilityRepository
 import com.pkkl.BreadMeUp.repositories.ProductRepository
 import com.pkkl.BreadMeUp.security.AuthUserDetails
 import org.springframework.security.access.AccessDeniedException
@@ -22,12 +23,12 @@ class ProductServiceTest extends Specification {
 
     private ProductTypeService productTypeService = Mock(ProductTypeService.class)
 
-    private ProductAvailabilityService productAvailabilityService = Mock(ProductAvailabilityService.class)
+    private ProductAvailabilityRepository productAvailabilityRepository = Mock(ProductAvailabilityRepository.class)
 
     private ProductService productService
 
     def setup() {
-        this.productService = new ProductServiceImpl(productRepository, bakeryService, categoryService, productTypeService, productAvailabilityService)
+        this.productService = new ProductServiceImpl(productRepository, bakeryService, categoryService, productTypeService, productAvailabilityRepository)
     }
 
     def "Should return object when product exists"() {
@@ -151,7 +152,7 @@ class ProductServiceTest extends Specification {
         this.bakeryService.getById(_ as Integer) >> bakery
         this.categoryService.getById(_ as Integer) >> category
         this.productTypeService.getById(_ as Integer) >> productType
-        this.productAvailabilityService.getAllByProduct(_ as Integer) >> productAvailabilities
+        this.productAvailabilityRepository.findAllByProduct(_ as Product) >> productAvailabilities
         and:
         Product product = Product.builder()
                 .id(1)
@@ -186,7 +187,7 @@ class ProductServiceTest extends Specification {
         this.bakeryService.getById(_ as Integer) >> bakery
         this.categoryService.getById(_ as Integer) >> category
         this.productTypeService.getById(_ as Integer) >> productType
-        this.productAvailabilityService.getAllByProduct(_ as Integer) >> productAvailabilities
+        this.productAvailabilityRepository.findAllByProduct(_ as Product) >> productAvailabilities
         and:
         Product product = Product.builder()
                 .id(1)
@@ -221,7 +222,7 @@ class ProductServiceTest extends Specification {
         this.bakeryService.getById(_ as Integer) >> bakery
         this.categoryService.getById(_ as Integer) >> category
         this.productTypeService.getById(_ as Integer) >> productType
-        this.productAvailabilityService.getAllByProduct(_ as Integer) >> productAvailabilities
+        this.productAvailabilityRepository.findAllByProduct(_ as Product) >> productAvailabilities
         and:
         Product product = Product.builder()
                 .id(1)
@@ -256,7 +257,7 @@ class ProductServiceTest extends Specification {
         this.bakeryService.getById(_ as Integer) >> bakery
         this.categoryService.getById(_ as Integer) >> category
         this.productTypeService.getById(_ as Integer) >> productType
-        this.productAvailabilityService.getAllByProduct(_ as Integer) >> productAvailabilities
+        this.productAvailabilityRepository.findAllByProduct(_ as Product) >> productAvailabilities
         and:
         Product product = Product.builder()
                 .id(1)
@@ -381,7 +382,7 @@ class ProductServiceTest extends Specification {
         this.bakeryService.getById(_ as Integer) >> bakery
         this.categoryService.getById(_ as Integer) >> category
         this.productTypeService.getById(_ as Integer) >> productType
-        this.productAvailabilityService.getAllByProduct(_ as Integer) >> productAvailabilities
+        this.productAvailabilityRepository.findAllByProduct(_ as Product) >> productAvailabilities
         and:
         Product product = Product.builder()
                 .id(1)

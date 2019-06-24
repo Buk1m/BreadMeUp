@@ -1,5 +1,6 @@
 package com.pkkl.BreadMeUp.controllers;
 
+import com.pkkl.BreadMeUp.dtos.ProductAvailabilityDetailsDto;
 import com.pkkl.BreadMeUp.dtos.ProductAvailabilityDto;
 import com.pkkl.BreadMeUp.model.ProductAvailability;
 import com.pkkl.BreadMeUp.services.ProductAvailabilityService;
@@ -34,8 +35,8 @@ public class ProductAvailabilityController {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseStatus(HttpStatus.OK)
-    public ProductAvailabilityDto getById(@PathVariable(name = "id") int id) {
-        return mapProductAvailabilityToProductAvailabilityDto(
+    public ProductAvailabilityDetailsDto getById(@PathVariable(name = "id") int id) {
+        return mapProductAvailabilityToProductAvailabilityDetailsDto(
                 this.productAvailabilityService.getById(id)
         );
     }
@@ -45,10 +46,10 @@ public class ProductAvailabilityController {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.OK)
-    public ProductAvailabilityDto update(@PathVariable(name = "id") int id,
+    public ProductAvailabilityDetailsDto update(@PathVariable(name = "id") int id,
                                          @Valid @RequestBody final ProductAvailabilityDto productAvailabilityDto) {
         productAvailabilityDto.setId(id);
-        return this.mapProductAvailabilityToProductAvailabilityDto(
+        return this.mapProductAvailabilityToProductAvailabilityDetailsDto(
                 this.productAvailabilityService.update(
                         this.mapProductAvailabilityDtoToProductAvailability(productAvailabilityDto)
                 )
@@ -60,8 +61,8 @@ public class ProductAvailabilityController {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public ProductAvailabilityDto add(@Valid @RequestBody final ProductAvailabilityDto productAvailabilityDto) {
-        return this.mapProductAvailabilityToProductAvailabilityDto(
+    public ProductAvailabilityDetailsDto add(@Valid @RequestBody final ProductAvailabilityDto productAvailabilityDto) {
+        return this.mapProductAvailabilityToProductAvailabilityDetailsDto(
                 this.productAvailabilityService.add(
                         this.mapProductAvailabilityDtoToProductAvailability(productAvailabilityDto)
                 )
@@ -73,9 +74,9 @@ public class ProductAvailabilityController {
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseStatus(HttpStatus.OK)
-    public ProductAvailabilityDto getByDateOrDateAndProduct(@RequestParam("date") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate localDate,
+    public ProductAvailabilityDetailsDto getByDateOrDateAndProduct(@RequestParam("date") @DateTimeFormat(pattern = "dd-MM-yyyy") LocalDate localDate,
                                                             @RequestParam(name = "productId") Integer productId) {
-        return this.mapProductAvailabilityToProductAvailabilityDto(
+        return this.mapProductAvailabilityToProductAvailabilityDetailsDto(
                 this.productAvailabilityService.getByDateAndProduct(localDate, productId)
         );
     }
@@ -84,7 +85,7 @@ public class ProductAvailabilityController {
         return this.modelMapper.map(productAvailabilityDto, ProductAvailability.class);
     }
 
-    private ProductAvailabilityDto mapProductAvailabilityToProductAvailabilityDto(final ProductAvailability productAvailability) {
-        return this.modelMapper.map(productAvailability, ProductAvailabilityDto.class);
+    private ProductAvailabilityDetailsDto mapProductAvailabilityToProductAvailabilityDetailsDto(final ProductAvailability productAvailability) {
+        return this.modelMapper.map(productAvailability, ProductAvailabilityDetailsDto.class);
     }
 }

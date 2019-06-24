@@ -2,7 +2,6 @@ package com.pkkl.BreadMeUp.services
 
 import com.pkkl.BreadMeUp.exceptions.ConstraintException
 import com.pkkl.BreadMeUp.exceptions.DatabaseException
-import com.pkkl.BreadMeUp.model.Bakery
 import com.pkkl.BreadMeUp.model.Product
 import com.pkkl.BreadMeUp.model.ProductAvailability
 import com.pkkl.BreadMeUp.repositories.ProductAvailabilityRepository
@@ -60,17 +59,18 @@ class ProductAvailabilityServiceTest extends Specification {
     @WithMockUser(roles = "MANAGER")
     def "Should return saved object when product availability has been successfully updated when user is manager and is bakery owner"() {
         given:
-        methodSecurityExpression.isThisBakeryManager(_ as UserDetails, 1) >> true
+        methodSecurityExpression.isThisProductManager(_ as UserDetails, 1) >> true
+        and:
+        Product product = Product.builder()
+                .id(1)
+                .productAvailability(new ArrayList<ProductAvailability>())
+                .build()
         and:
         ProductAvailability productAvailability = ProductAvailability.builder()
-                .product(Product.builder()
-                        .bakery(Bakery.builder()
-                                .id(1)
-                                .build()
-                        ).build()
-                ).build()
+                .product(product)
+                .build()
         and:
-        productAvailabilityRepository.save(productAvailability) >> productAvailability
+        productRepository.findById(1) >> Optional.of(product)
         when:
         ProductAvailability returnedProductAvailability = this.productAvailabilityService.update(productAvailability)
         then:
@@ -80,15 +80,18 @@ class ProductAvailabilityServiceTest extends Specification {
     @WithMockUser(roles = "MANAGER")
     def "Should throw AccessDeniedException and user is manager and is not bakery owner"() {
         given:
-        methodSecurityExpression.isThisBakeryManager(_ as UserDetails, 1) >> false
+        methodSecurityExpression.isThisProductManager(_ as UserDetails, 1) >> false
+        and:
+        Product product = Product.builder()
+                .id(1)
+                .productAvailability(new ArrayList<ProductAvailability>())
+                .build()
         and:
         ProductAvailability productAvailability = ProductAvailability.builder()
-                .product(Product.builder()
-                        .bakery(Bakery.builder()
-                                .id(1)
-                                .build()
-                        ).build()
-                ).build()
+                .product(product)
+                .build()
+        and:
+        productRepository.findById(1) >> Optional.of(product)
         when:
         this.productAvailabilityService.update(productAvailability)
         then:
@@ -98,17 +101,20 @@ class ProductAvailabilityServiceTest extends Specification {
     @WithMockUser(roles = "MANAGER")
     def "Should update throw ConstraintException when repository save throws ConstraintViolationException"() {
         given:
-        methodSecurityExpression.isThisBakeryManager(_ as UserDetails, 1) >> true
+        methodSecurityExpression.isThisProductManager(_ as UserDetails, 1) >> true
+        and:
+        Product product = Product.builder()
+                .id(1)
+                .productAvailability(new ArrayList<ProductAvailability>())
+                .build()
         and:
         ProductAvailability productAvailability = ProductAvailability.builder()
-                .product(Product.builder()
-                        .bakery(Bakery.builder()
-                                .id(1)
-                                .build()
-                        ).build()
-                ).build()
+                .product(product)
+                .build()
         and:
-        productAvailabilityRepository.save(_ as ProductAvailability) >> { p -> throw new ConstraintViolationException(new HashSet<ConstraintViolation<?>>()) }
+        productRepository.findById(1) >> Optional.of(product)
+        and:
+        productRepository.save(_ as Product) >> { p -> throw new ConstraintViolationException(new HashSet<ConstraintViolation<?>>()) }
         when:
         this.productAvailabilityService.update(productAvailability)
         then:
@@ -118,17 +124,20 @@ class ProductAvailabilityServiceTest extends Specification {
     @WithMockUser(roles = "MANAGER")
     def "Should update throw ConstraintException when repository save throws hibernate ConstraintViolationException"() {
         given:
-        methodSecurityExpression.isThisBakeryManager(_ as UserDetails, 1) >> true
+        methodSecurityExpression.isThisProductManager(_ as UserDetails, 1) >> true
+        and:
+        Product product = Product.builder()
+                .id(1)
+                .productAvailability(new ArrayList<ProductAvailability>())
+                .build()
         and:
         ProductAvailability productAvailability = ProductAvailability.builder()
-                .product(Product.builder()
-                        .bakery(Bakery.builder()
-                                .id(1)
-                                .build()
-                        ).build()
-                ).build()
+                .product(product)
+                .build()
         and:
-        productAvailabilityRepository.save(_ as ProductAvailability) >> { p -> throw new RuntimeException(new org.hibernate.exception.ConstraintViolationException(null, null, null)) }
+        productRepository.findById(1) >> Optional.of(product)
+        and:
+        productRepository.save(_ as Product) >> { p -> throw new RuntimeException(new org.hibernate.exception.ConstraintViolationException(null, null, null)) }
         when:
         this.productAvailabilityService.update(productAvailability)
         then:
@@ -138,17 +147,20 @@ class ProductAvailabilityServiceTest extends Specification {
     @WithMockUser(roles = "MANAGER")
     def "Should update throw DatabaseException when repository save throws exception"() {
         given:
-        methodSecurityExpression.isThisBakeryManager(_ as UserDetails, 1) >> true
+        methodSecurityExpression.isThisProductManager(_ as UserDetails, 1) >> true
+        and:
+        Product product = Product.builder()
+                .id(1)
+                .productAvailability(new ArrayList<ProductAvailability>())
+                .build()
         and:
         ProductAvailability productAvailability = ProductAvailability.builder()
-                .product(Product.builder()
-                        .bakery(Bakery.builder()
-                                .id(1)
-                                .build()
-                        ).build()
-                ).build()
+                .product(product)
+                .build()
         and:
-        productAvailabilityRepository.save(_ as ProductAvailability) >> { p -> throw new RuntimeException("message") }
+        productRepository.findById(1) >> Optional.of(product)
+        and:
+        productRepository.save(_ as Product) >> { p -> throw new RuntimeException("message") }
         when:
         this.productAvailabilityService.update(productAvailability)
         then:
@@ -158,15 +170,18 @@ class ProductAvailabilityServiceTest extends Specification {
     @WithMockUser(roles = "MANAGER")
     def "Should add return saved object when product availability has been successfully added and user is manager and is bakery owner"() {
         given:
-        methodSecurityExpression.isThisBakeryManager(_ as UserDetails, 1) >> true
+        methodSecurityExpression.isThisProductManager(_ as UserDetails, 1) >> true
+        and:
+        Product product = Product.builder()
+                .id(1)
+                .productAvailability(new ArrayList<ProductAvailability>())
+                .build()
         and:
         ProductAvailability productAvailability = ProductAvailability.builder()
-                .product(Product.builder()
-                        .bakery(Bakery.builder()
-                                .id(1)
-                                .build()
-                        ).build()
-                ).build()
+                .product(product)
+                .build()
+        and:
+        productRepository.findById(1) >> Optional.of(product)
         and:
         productAvailabilityRepository.save(productAvailability) >> productAvailability
         when:
@@ -178,15 +193,18 @@ class ProductAvailabilityServiceTest extends Specification {
     @WithMockUser(roles = "MANAGER")
     def "Should add return saved object when product availability has been successfully added and user is manager and is not bakery owner"() {
         given:
-        methodSecurityExpression.isThisBakeryManager(_ as UserDetails, 1) >> false
+        methodSecurityExpression.isThisProductManager(_ as UserDetails, 1) >> false
+        and:
+        Product product = Product.builder()
+                .id(1)
+                .productAvailability(new ArrayList<ProductAvailability>())
+                .build()
         and:
         ProductAvailability productAvailability = ProductAvailability.builder()
-                .product(Product.builder()
-                        .bakery(Bakery.builder()
-                                .id(1)
-                                .build()
-                        ).build()
-                ).build()
+                .product(product)
+                .build()
+        and:
+        productRepository.findById(1) >> Optional.of(product)
         when:
         this.productAvailabilityService.add(productAvailability)
         then:
@@ -196,17 +214,20 @@ class ProductAvailabilityServiceTest extends Specification {
     @WithMockUser(roles = "MANAGER")
     def "Should add throw ConstraintException when repository save throws ConstraintViolationException"() {
         given:
-        methodSecurityExpression.isThisBakeryManager(_ as UserDetails, 1) >> true
+        methodSecurityExpression.isThisProductManager(_ as UserDetails, 1) >> true
+        and:
+        Product product = Product.builder()
+                .id(1)
+                .productAvailability(new ArrayList<ProductAvailability>())
+                .build()
         and:
         ProductAvailability productAvailability = ProductAvailability.builder()
-                .product(Product.builder()
-                        .bakery(Bakery.builder()
-                                .id(1)
-                                .build()
-                        ).build()
-                ).build()
+                .product(product)
+                .build()
         and:
-        productAvailabilityRepository.save(_ as ProductAvailability) >> { p -> throw new ConstraintViolationException(new HashSet<ConstraintViolation<?>>()) }
+        productRepository.findById(1) >> Optional.of(product)
+        and:
+        productRepository.save(_ as Product) >> { p -> throw new ConstraintViolationException(new HashSet<ConstraintViolation<?>>()) }
         when:
         this.productAvailabilityService.add(productAvailability)
         then:
@@ -216,17 +237,20 @@ class ProductAvailabilityServiceTest extends Specification {
     @WithMockUser(roles = "MANAGER")
     def "Should add throw ConstraintException when repository save throws hibernate ConstraintViolationException"() {
         given:
-        methodSecurityExpression.isThisBakeryManager(_ as UserDetails, 1) >> true
+        methodSecurityExpression.isThisProductManager(_ as UserDetails, 1) >> true
+        and:
+        Product product = Product.builder()
+                .id(1)
+                .productAvailability(new ArrayList<ProductAvailability>())
+                .build()
         and:
         ProductAvailability productAvailability = ProductAvailability.builder()
-                .product(Product.builder()
-                        .bakery(Bakery.builder()
-                                .id(1)
-                                .build()
-                        ).build()
-                ).build()
+                .product(product)
+                .build()
         and:
-        productAvailabilityRepository.save(_ as ProductAvailability) >> { p -> throw new RuntimeException(new org.hibernate.exception.ConstraintViolationException(null, null, null)) }
+        productRepository.findById(1) >> Optional.of(product)
+        and:
+        productRepository.save(_ as Product) >> { p -> throw new RuntimeException(new org.hibernate.exception.ConstraintViolationException(null, null, null)) }
         when:
         this.productAvailabilityService.add(productAvailability)
         then:
@@ -236,17 +260,20 @@ class ProductAvailabilityServiceTest extends Specification {
     @WithMockUser(roles = "MANAGER")
     def "Should add throw DatabaseException when repository save throws exception"() {
         given:
-        methodSecurityExpression.isThisBakeryManager(_ as UserDetails, 1) >> true
+        methodSecurityExpression.isThisProductManager(_ as UserDetails, 1) >> true
+        and:
+        Product product = Product.builder()
+                .id(1)
+                .productAvailability(new ArrayList<ProductAvailability>())
+                .build()
         and:
         ProductAvailability productAvailability = ProductAvailability.builder()
-                .product(Product.builder()
-                        .bakery(Bakery.builder()
-                                .id(1)
-                                .build()
-                        ).build()
-                ).build()
+                .product(product)
+                .build()
         and:
-        productAvailabilityRepository.save(_ as ProductAvailability) >> { p -> throw new RuntimeException("message") }
+        productRepository.findById(1) >> Optional.of(product)
+        and:
+        productRepository.save(_ as Product) >> { p -> throw new RuntimeException("message") }
         when:
         this.productAvailabilityService.add(productAvailability)
         then:

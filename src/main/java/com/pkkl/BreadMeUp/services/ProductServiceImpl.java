@@ -3,6 +3,7 @@ package com.pkkl.BreadMeUp.services;
 import com.pkkl.BreadMeUp.exceptions.ConstraintException;
 import com.pkkl.BreadMeUp.exceptions.DatabaseException;
 import com.pkkl.BreadMeUp.model.*;
+import com.pkkl.BreadMeUp.repositories.ProductAvailabilityRepository;
 import com.pkkl.BreadMeUp.repositories.ProductRepository;
 import com.pkkl.BreadMeUp.security.AuthUserDetails;
 import lombok.extern.slf4j.Slf4j;
@@ -30,17 +31,17 @@ public class ProductServiceImpl implements ProductService {
 
     private final ProductTypeService productTypeService;
 
-    private final ProductAvailabilityService productAvailabilityService;
+    private final ProductAvailabilityRepository productAvailabilityRepository;
 
     @Autowired
     public ProductServiceImpl(ProductRepository productRepository, BakeryService bakeryService,
                               CategoryService categoryService, ProductTypeService productTypeService,
-                              ProductAvailabilityService productAvailabilityService) {
+                              ProductAvailabilityRepository productAvailabilityRepository) {
         this.productRepository = productRepository;
         this.bakeryService = bakeryService;
         this.categoryService = categoryService;
         this.productTypeService = productTypeService;
-        this.productAvailabilityService = productAvailabilityService;
+        this.productAvailabilityRepository = productAvailabilityRepository;
     }
 
     @Override
@@ -95,7 +96,7 @@ public class ProductServiceImpl implements ProductService {
         try {
             this.setBakeryCategoryProductTypeForProduct(product);
 
-            List<ProductAvailability> productAvailabilities = this.productAvailabilityService.getAllByProduct(product.getId());
+            List<ProductAvailability> productAvailabilities = this.productAvailabilityRepository.findAllByProduct(product);
             productAvailabilities.forEach(pa -> pa.setProduct(product));
             product.setProductAvailability(productAvailabilities);
 

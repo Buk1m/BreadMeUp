@@ -9,6 +9,7 @@ import com.pkkl.BreadMeUp.repositories.ProductRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.ConstraintViolationException;
 import java.time.LocalDate;
@@ -22,12 +23,15 @@ public class ProductAvailabilityServiceImpl implements ProductAvailabilityServic
 
     private final ProductAvailabilityRepository productAvailabilityRepository;
 
+    private final ProductService productService;
+
     private final ProductRepository productRepository;
 
     @Autowired
     public ProductAvailabilityServiceImpl(ProductAvailabilityRepository productAvailabilityRepository,
-                                          ProductRepository productRepository) {
+                                          ProductService productService, ProductRepository productRepository) {
         this.productAvailabilityRepository = productAvailabilityRepository;
+        this.productService = productService;
         this.productRepository = productRepository;
     }
 
@@ -41,11 +45,13 @@ public class ProductAvailabilityServiceImpl implements ProductAvailabilityServic
         }
     }
 
+    @Transactional
     @Override
     public ProductAvailability update(final ProductAvailability productAvailability) {
         return saveOrUpdate(productAvailability);
     }
 
+    @Transactional
     @Override
     public ProductAvailability add(final ProductAvailability productAvailability) {
         return saveOrUpdate(productAvailability);
@@ -78,7 +84,14 @@ public class ProductAvailabilityServiceImpl implements ProductAvailabilityServic
 
     private ProductAvailability saveOrUpdate(final ProductAvailability productAvailability) {
         try {
-            return productAvailabilityRepository.save(productAvailability);
+            Product product = this.productRepository.findById(productAvailability.getProduct().getId())
+                    .orElseThrow(() -> {
+                        throw new RuntimeException("Product does not exist");
+                    });
+            productAvailability.setProduct(product);
+            product.getProductAvailability().add(productAvailability);
+            this.productRepository.save(product);
+            return productAvailability;
         } catch (ConstraintViolationException e) {
             throw new ConstraintException(e.getConstraintViolations().toString(), e);
         } catch (Exception e) {
