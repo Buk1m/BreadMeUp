@@ -1,16 +1,21 @@
 package com.pkkl.BreadMeUp.controllers
 
+import com.pkkl.BreadMeUp.exceptions.DatabaseException
 import com.pkkl.BreadMeUp.handlers.GlobalExceptionHandler
 import com.pkkl.BreadMeUp.services.UserService
 import com.pkkl.BreadMeUp.services.UserServiceImpl
+import org.springframework.http.MediaType
 import org.springframework.security.access.AccessDeniedException
 import org.springframework.test.web.servlet.MockMvc
 import org.springframework.test.web.servlet.setup.MockMvcBuilders
 import org.springframework.web.util.NestedServletException
 import spock.lang.Specification
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status
 
 class UserControllerTest extends Specification {
@@ -80,4 +85,27 @@ class UserControllerTest extends Specification {
         def e = thrown(NestedServletException.class)
         e.cause instanceof AccessDeniedException
     }
+
+    def "Should assign bakery to user and return 200 response code"() {
+        when:
+        def results = mockMvc.perform(
+                put('/admin/users/1/bakeries/1'))
+                .andDo(print())
+        then:
+        this.userService.assignBakeryToUser(1, 1)
+        and:
+        results.andExpect(status().isOk())
+    }
+
+    def "Should return 500 response code when bakery service getById throws DatabaseException"() {
+        given:
+        this.userService.assignBakeryToUser(1, 1) >> { i -> throw new DatabaseException() }
+        when:
+        def results = mockMvc.perform(
+                put('/admin/users/1/bakeries/1'))
+                .andDo(print())
+        then:
+        results.andExpect(status().isInternalServerError())
+    }
+
 }
