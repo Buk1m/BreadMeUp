@@ -21,17 +21,15 @@ import java.util.stream.Collectors;
 @Service
 public class ProductAvailabilityServiceImpl implements ProductAvailabilityService {
 
-    private final ProductAvailabilityRepository productAvailabilityRepository;
 
-    private final ProductService productService;
+    private final ProductAvailabilityRepository productAvailabilityRepository;
 
     private final ProductRepository productRepository;
 
     @Autowired
     public ProductAvailabilityServiceImpl(ProductAvailabilityRepository productAvailabilityRepository,
-                                          ProductService productService, ProductRepository productRepository) {
+                                          ProductRepository productRepository) {
         this.productAvailabilityRepository = productAvailabilityRepository;
-        this.productService = productService;
         this.productRepository = productRepository;
     }
 
@@ -48,13 +46,50 @@ public class ProductAvailabilityServiceImpl implements ProductAvailabilityServic
     @Transactional
     @Override
     public ProductAvailability update(final ProductAvailability productAvailability) {
-        return saveOrUpdate(productAvailability);
+        try {
+            Product product = this.productRepository.findById(productAvailability.getProduct().getId())
+                    .orElseThrow(() -> {
+                        throw new RuntimeException("Product does not exist");
+                    });
+            productAvailability.setProduct(product);
+            product.setProductAvailability(
+                    product.getProductAvailability().stream()
+                            .filter((pa) -> pa.getId() != productAvailability.getId())
+                            .collect(Collectors.toList()));
+            product.getProductAvailability().add(productAvailability);
+            this.productRepository.save(product);
+            return productAvailability;
+        } catch (ConstraintViolationException e) {
+            throw new ConstraintException(e.getConstraintViolations().toString(), e);
+        } catch (Exception e) {
+            if (e.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
+                throw new ConstraintException(e.getMessage(), e);
+            }
+            throw new DatabaseException(e.getMessage(), e);
+        }
     }
 
     @Transactional
     @Override
     public ProductAvailability add(final ProductAvailability productAvailability) {
-        return saveOrUpdate(productAvailability);
+        try {
+            Product product = this.productRepository.findById(productAvailability.getProduct().getId())
+                    .orElseThrow(() -> {
+                        throw new RuntimeException("Product does not exist");
+                    });
+            productAvailability.setProduct(product);
+            ProductAvailability savedProductAvailability = this.productAvailabilityRepository.save(productAvailability);
+            product.getProductAvailability().add(savedProductAvailability);
+            this.productRepository.save(product);
+            return savedProductAvailability;
+        } catch (ConstraintViolationException e) {
+            throw new ConstraintException(e.getConstraintViolations().toString(), e);
+        } catch (Exception e) {
+            if (e.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
+                throw new ConstraintException(e.getMessage(), e);
+            }
+            throw new DatabaseException(e.getMessage(), e);
+        }
     }
 
     @Override
@@ -78,26 +113,6 @@ public class ProductAvailabilityServiceImpl implements ProductAvailabilityServic
                     .filter(p -> contains(p, productId))
                     .collect(Collectors.toList());
         } catch (Exception e) {
-            throw new DatabaseException(e.getMessage(), e);
-        }
-    }
-
-    private ProductAvailability saveOrUpdate(final ProductAvailability productAvailability) {
-        try {
-            Product product = this.productRepository.findById(productAvailability.getProduct().getId())
-                    .orElseThrow(() -> {
-                        throw new RuntimeException("Product does not exist");
-                    });
-            productAvailability.setProduct(product);
-            product.getProductAvailability().add(productAvailability);
-            this.productRepository.save(product);
-            return productAvailability;
-        } catch (ConstraintViolationException e) {
-            throw new ConstraintException(e.getConstraintViolations().toString(), e);
-        } catch (Exception e) {
-            if (e.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
-                throw new ConstraintException(e.getMessage(), e);
-            }
             throw new DatabaseException(e.getMessage(), e);
         }
     }
