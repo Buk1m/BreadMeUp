@@ -1,6 +1,7 @@
 package com.pkkl.BreadMeUp.controllers;
 
 import com.pkkl.BreadMeUp.dtos.BakeryDto;
+import com.pkkl.BreadMeUp.dtos.BakeryLocationDto;
 import com.pkkl.BreadMeUp.model.Bakery;
 import com.pkkl.BreadMeUp.services.BakeryService;
 import org.modelmapper.ModelMapper;
@@ -24,6 +25,15 @@ public class BakeryController {
     public BakeryController(BakeryService bakeryService, ModelMapper modelMapper) {
         this.bakeryService = bakeryService;
         this.modelMapper = modelMapper;
+    }
+
+    @GetMapping(
+            value = "/{id}/location",
+            produces = MediaType.APPLICATION_JSON_UTF8_VALUE
+    )
+    @ResponseStatus(HttpStatus.OK)
+    public BakeryLocationDto getLocation(@PathVariable("id") int id) {
+        return this.bakeryService.getLocation(id);
     }
 
     @GetMapping(

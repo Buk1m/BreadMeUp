@@ -1,5 +1,6 @@
 package com.pkkl.BreadMeUp.controllers
 
+import com.pkkl.BreadMeUp.clients.GoogleMapsClient
 import com.pkkl.BreadMeUp.dtos.BakeryDto
 import com.pkkl.BreadMeUp.exceptions.DatabaseException
 import com.pkkl.BreadMeUp.handlers.GlobalExceptionHandler

@@ -1,5 +1,6 @@
 package com.pkkl.BreadMeUp.services
 
+import com.pkkl.BreadMeUp.clients.GoogleMapsClient
 import com.pkkl.BreadMeUp.exceptions.ConstraintException
 import com.pkkl.BreadMeUp.exceptions.DatabaseException
 import com.pkkl.BreadMeUp.model.Bakery
@@ -13,10 +14,12 @@ class BakeryServiceTest extends Specification {
 
     private BakeryRepository bakeryRepository = Mock(BakeryRepository.class)
 
+    private GoogleMapsClient googleMapsClient = Mock(GoogleMapsClient.class)
+
     private BakeryService bakeryService
 
     def setup() {
-        this.bakeryService = new BakeryServiceImpl(bakeryRepository)
+        this.bakeryService = new BakeryServiceImpl(bakeryRepository, googleMapsClient)
     }
 
     def "Should return object when bakery exists"() {
