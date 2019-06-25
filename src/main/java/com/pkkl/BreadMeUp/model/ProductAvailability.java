@@ -1,6 +1,5 @@
 package com.pkkl.BreadMeUp.model;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pkkl.BreadMeUp.exceptions.ConstraintException;
 import lombok.*;
 
@@ -21,10 +20,8 @@ public class ProductAvailability {
     @Column(name = "availability_id")
     private int id;
 
-    @ManyToOne(cascade = CascadeType.ALL, optional = false)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "product_id", nullable = false)
-    @JsonIgnore
-    @EqualsAndHashCode.Exclude
     private Product product;
 
     @Column(name = "day", nullable = false)

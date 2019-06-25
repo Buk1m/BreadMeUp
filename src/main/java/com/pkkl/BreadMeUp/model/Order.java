@@ -3,7 +3,6 @@ package com.pkkl.BreadMeUp.model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.pkkl.BreadMeUp.discounts.DiscountStrategy;
 import lombok.*;
-
 import javax.persistence.*;
 import java.time.LocalDate;
 import java.util.Set;
@@ -31,14 +30,13 @@ public class Order {
     @Column(name = "cancelled")
     private boolean cancelled;
 
-    @ManyToOne(cascade = CascadeType.ALL)
+    @ManyToOne(optional = false)
     @JoinColumn(name = "user_id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private User user;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JsonIgnore
+    @ManyToOne(optional = false)
     @JoinColumn(name = "bakery_id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
