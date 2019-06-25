@@ -1,9 +1,36 @@
-INSERT INTO roles(name, version) VALUES ('ROLE_USER', 0);
-INSERT INTO roles(name, version) VALUES ('ROLE_ADMIN', 0);
-INSERT INTO roles(name, version) VALUES ('ROLE_MANAGER', 0);
-
+INSERT INTO roles(name, version) values ('ROLE_USER', 0);
+INSERT INTO roles(name, version) values ('ROLE_ADMIN', 0);
+INSERT INTO roles(name, version) values ('MANAGER', 0);
+INSERT INTO bakeries (city, name, place_id, postal_code, street_name, street_number, version) values ('Lodz', 'Chlebek Swiezy ze Ah Oh', '2137', '93-444', 'Piekarniowa', 22, 0);
+INSERT INTO bakeries (city, name, place_id, postal_code, street_name, street_number, version) values ('Koluszki', 'Chlebkowy Kruszek', '2127', '91-414', 'Ciasteczkowa', 12, 0);
+INSERT INTO bakeries (city, name, place_id, postal_code, street_name, street_number, version) values ('Krakow', 'Chlebek na smoczym ogniu', '222', '83-111', 'Smocza', 123, 0);
+INSERT INTO users (email, login, password, phone, blocked, version) values ('testClient@yopmail.com', 'testClient', '$2a$10$xdonWOp0DdriYQr5iz37ZeVF24CJXiw82n7RL1G9bU2wGTtA5juoC', '123123123', false, 0);
+INSERT INTO users (email, login, password, phone, blocked, version) values ('testAdmin@yopmail.com', 'testAdmin', '$2a$10$GFfh2vWUpDId71HeQtA31ecyHscFblKuW2DeGOyfqmrHyRamlK7dq', '987987987', false, 0);
+INSERT INTO users (email, login, password, phone, bakery_id, blocked, version) values ('testManager@yopmail.com', 'testManager', '$2a$10$MX67d51/QKBBfaV5M57guO0CId2d.XMBEbuEY3r1B/8rAkOr/vcmm', '6546546545', 1, false, 0);
 INSERT INTO users(blocked, email, login, password, phone, version) VALUES (false, 'admin@gmail.com', 'root', '$2a$10$FWbR.MFYu5cjeQ6arxWqsu6rIofiJoHEshLJ2MCj/nGNfa3/fcrhy', '987654321 ', 1);
 INSERT INTO users_roles(user_id, role_id) VALUES ((SELECT user_id FROM users WHERE users.login='root' LIMIT 1), (SELECT role_id FROM roles WHERE roles.name='ROLE_ADMIN' LIMIT 1));
-
+INSERT INTO users_roles (role_id, user_id) values (1,1);
+INSERT INTO users_roles (role_id, user_id) values (2,2);
+INSERT INTO users_roles (role_id, user_id) values (3,3);
+INSERT INTO categories (name, version) values ('Chlebki',0);
+INSERT INTO categories (name, version) values ('Ciasteczka',0);
+INSERT INTO categories (name, version) values ('Buleczki',0);
+INSERT INTO categories (name, version) values ('Ciasta',0);
+INSERT INTO categories (name, version) values ('Napoje',0);
+INSERT INTO categories (name, version) values ('Sypkie',0);
 INSERT INTO categories(name, version) VALUES ('rolls', 0);
 INSERT INTO categories(name, version) VALUES ('breads', 0);
+INSERT INTO product_types (size, unit_of_measurement, version) values (1,'KILOGRAM',0);
+INSERT INTO product_types (size, unit_of_measurement, version) values (1,'LITER',0);
+INSERT INTO product_types (size, unit_of_measurement, version) values (1,'GRAM',0);
+INSERT INTO product_types (size, unit_of_measurement, version) values (1,'MILILITER',0);
+INSERT INTO product_types (size, unit_of_measurement, version) values (1,'PIECE',0);
+INSERT INTO products (active,product_limit, name, price,version,bakery_bakery_id, category_category_id, product_type_product_type_id)values (true, 8, 'Kruchutki chlebuszek', 2.55,0,1,1,1);
+INSERT INTO products (active,product_limit, name, price,version,bakery_bakery_id, category_category_id, product_type_product_type_id)values (true, 20, 'Zajebista buleczka', 0.99,0,1,3,5);
+INSERT INTO products (active,product_limit, name, price,version,bakery_bakery_id, category_category_id, product_type_product_type_id)values (true, 5, 'Mleczko od krowki', 3.20,0,1,5,2);
+INSERT INTO products (active,product_limit, name, price,version,bakery_bakery_id, category_category_id, product_type_product_type_id)values (true, 6, 'Drobmniutka maczka', 2.37,0,2,6,1);
+INSERT INTO products (active,product_limit, name, price,version,bakery_bakery_id, category_category_id, product_type_product_type_id)values (true, 10, 'Ciasteczka dla grubaskow', 22.50,0,2,2,1);
+INSERT INTO products (active,product_limit, name, price,version,bakery_bakery_id, category_category_id, product_type_product_type_id)values (true, 2, 'Tort dla bombelka', 25.0,0,3,4,5);
+INSERT INTO closed_days  (date, version) values ('2019-07-25', 0);
+INSERT INTO bakeries_closed_days (closed_day_id, bakery_id) values (1,1);
+
