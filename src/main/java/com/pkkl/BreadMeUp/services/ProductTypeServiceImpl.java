@@ -27,7 +27,8 @@ public class ProductTypeServiceImpl implements ProductTypeService {
     public ProductType getById(int id) {
         try {
             return productTypeRepository.findById(id).orElseThrow(() -> new RuntimeException("Product type doesn't exist"));
-        } catch (Exception e){
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
             throw new DatabaseException(e.getMessage(), e);
         }
     }
@@ -36,7 +37,8 @@ public class ProductTypeServiceImpl implements ProductTypeService {
     public List<ProductType> getAll() {
         try {
             return productTypeRepository.findAll();
-        } catch (Exception e){
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
             throw new DatabaseException(e.getMessage(), e);
         }
     }
@@ -45,7 +47,8 @@ public class ProductTypeServiceImpl implements ProductTypeService {
     public void delete(int id) {
         try {
             productTypeRepository.deleteById(id);
-        } catch (Exception e){
+        } catch (Exception e) {
+            log.error(e.getMessage(), e);
             throw new DatabaseException(e.getMessage(), e);
         }
     }
@@ -60,12 +63,14 @@ public class ProductTypeServiceImpl implements ProductTypeService {
         return saveOrUpdate(productType);
     }
 
-    private ProductType saveOrUpdate(final ProductType productType){
+    private ProductType saveOrUpdate(final ProductType productType) {
         try {
             return productTypeRepository.save(productType);
         } catch (ConstraintViolationException e) {
+            log.error(e.getMessage(), e);
             throw new ConstraintException(e.getConstraintViolations().toString(), e);
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
             if (e.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
                 throw new ConstraintException(e.getMessage(), e);
             }
