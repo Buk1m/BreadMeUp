@@ -1,5 +1,6 @@
 package com.pkkl.BreadMeUp.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
 import org.springframework.data.domain.Persistable;
@@ -55,8 +56,8 @@ public class User implements Persistable<Integer> {
     @JoinTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles;
 
-    @OneToMany
-    @JoinColumn(name = "order_id")
+    @OneToMany(mappedBy="user")
+    @JsonIgnore
     @ToString.Exclude
     private Set<Order> orders;
 
