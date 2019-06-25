@@ -1,5 +1,5 @@
 language: java
-sudo: true
+sudo: required
 dist: trusty
 install: mvn clean install -Pintegration-test
 jdk:
