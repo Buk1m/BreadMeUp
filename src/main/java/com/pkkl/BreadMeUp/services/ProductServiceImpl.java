@@ -49,6 +49,7 @@ public class ProductServiceImpl implements ProductService {
         try {
             return productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product doesn't exist \\U+1F635"));
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
             throw new DatabaseException(e.getMessage(), e);
         }
     }
@@ -58,6 +59,7 @@ public class ProductServiceImpl implements ProductService {
         try {
             return productRepository.findAll();
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
             throw new DatabaseException(e.getMessage(), e);
         }
     }
@@ -75,8 +77,10 @@ public class ProductServiceImpl implements ProductService {
                             }
                     );
         } catch (AccessDeniedException e) {
+            log.error(e.getMessage(), e);
             throw e;
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
             throw new DatabaseException(e.getMessage(), e);
         }
     }
@@ -102,8 +106,10 @@ public class ProductServiceImpl implements ProductService {
 
             return productRepository.save(product);
         } catch (ConstraintViolationException e) {
+            log.error(e.getMessage(), e);
             throw new ConstraintException(e.getConstraintViolations().toString(), e);
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
             if (e.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
                 throw new ConstraintException(e.getMessage(), e);
             }
@@ -121,6 +127,7 @@ public class ProductServiceImpl implements ProductService {
         } catch (ConstraintViolationException e) {
             throw new ConstraintException(e.getConstraintViolations().toString(), e);
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
             if (e.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
                 throw new ConstraintException(e.getMessage(), e);
             }
@@ -146,6 +153,7 @@ public class ProductServiceImpl implements ProductService {
                     .filter(p -> containsBakery(p, bakeryId))
                     .collect(Collectors.toList());
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
             throw new DatabaseException(e.getMessage(), e);
         }
     }
@@ -157,6 +165,7 @@ public class ProductServiceImpl implements ProductService {
                     .filter(p -> containsCategory(p, categoryId))
                     .collect(Collectors.toList());
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
             throw new DatabaseException(e.getMessage(), e);
         }
     }
@@ -169,6 +178,7 @@ public class ProductServiceImpl implements ProductService {
                     .filter(p -> containsCategory(p, categoryId))
                     .collect(Collectors.toList());
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
             throw new DatabaseException(e.getMessage(), e);
         }
     }
