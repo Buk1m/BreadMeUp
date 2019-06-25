@@ -193,7 +193,7 @@ class UserServiceTest extends Specification {
 
     def "Should throw DatabaseException when block method from repository throws exception"() {
         given:
-        this.userRepositoryMock.setBlocked("login", true) >> {
+        this.userRepositoryMock.setBlocked("login", true) >> { _
             ->
             throw new RuntimeException()
         }
@@ -214,7 +214,7 @@ class UserServiceTest extends Specification {
 
     def "Should throw DatabaseException when unblock method from repository throws exception"() {
         given:
-        this.userRepositoryMock.setBlocked("login", false) >> {
+        this.userRepositoryMock.setBlocked("login", false) >> { _
             ->
             throw new RuntimeException()
         }
