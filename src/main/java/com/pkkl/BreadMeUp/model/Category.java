@@ -22,7 +22,7 @@ public class Category {
     @Column(name = "category_id")
     private int id;
 
-    @Column(name = "name")
+    @Column(name = "name", unique = true)
     @NotBlank
     @Length(min = 3, max = 25, message = "Name length should be from 3 to 25")
     private String name;

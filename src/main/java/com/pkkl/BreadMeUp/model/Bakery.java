@@ -50,8 +50,7 @@ public class Bakery {
     @Length(min = 1, max = 15, message = "Street number length should be from 1 to 15")
     private String streetNumber;
 
-    @OneToMany
-    @JoinColumn(name = "order_id")
+    @OneToMany(mappedBy = "bakery")
     @ToString.Exclude
     private Set<Order> orders;
 

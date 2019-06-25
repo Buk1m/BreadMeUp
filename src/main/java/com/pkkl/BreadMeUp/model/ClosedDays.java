@@ -3,7 +3,7 @@ package com.pkkl.BreadMeUp.model;
 import lombok.Data;
 
 import javax.persistence.*;
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Data
@@ -17,7 +17,7 @@ public class ClosedDays {
     private int id;
 
     @Column(name = "date")
-    private Date date;
+    private LocalDate date;
 
     @ManyToMany
     @JoinTable(name = "bakeries_closed_days", joinColumns = @JoinColumn(name = "closed_day_id"), inverseJoinColumns = @JoinColumn(name = "bakery_id"))

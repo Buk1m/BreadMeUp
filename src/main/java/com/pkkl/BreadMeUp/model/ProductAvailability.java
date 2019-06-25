@@ -1,9 +1,8 @@
 package com.pkkl.BreadMeUp.model;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.pkkl.BreadMeUp.exceptions.ConstraintException;
+import lombok.*;
 
 import javax.persistence.*;
 import javax.validation.constraints.Min;
@@ -22,8 +21,10 @@ public class ProductAvailability {
     @Column(name = "availability_id")
     private int id;
 
-    @ManyToOne(optional = false)
+    @ManyToOne(cascade = CascadeType.ALL, optional = false)
     @JoinColumn(name = "product_id", nullable = false)
+    @JsonIgnore
+    @EqualsAndHashCode.Exclude
     private Product product;
 
     @Column(name = "day", nullable = false)
@@ -40,4 +41,12 @@ public class ProductAvailability {
     @Version
     @Column(name = "version")
     private long version;
+
+    public void appendToOrderedNumber(int orderedNumber) {
+        int appended = this.orderedNumber + orderedNumber;
+        if (appended > limit) {
+            throw new ConstraintException("Order exceeded the limit by " + (appended - limit));
+        }
+        this.orderedNumber = appended;
+    }
 }

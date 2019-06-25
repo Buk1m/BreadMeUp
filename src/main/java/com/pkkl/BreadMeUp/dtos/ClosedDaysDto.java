@@ -4,7 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 
-import java.util.Date;
+import java.time.LocalDate;
 
 @Data
 @AllArgsConstructor
@@ -12,5 +12,5 @@ import java.util.Date;
 public class ClosedDaysDto {
     private int id;
 
-    private Date date;
+    private LocalDate date;
 }

@@ -1,25 +1,38 @@
-package com.pkkl.BreadMeUp.services
-
 import com.pkkl.BreadMeUp.exceptions.ConstraintException
 import com.pkkl.BreadMeUp.exceptions.DatabaseException
+import com.pkkl.BreadMeUp.exceptions.NotFoundException
 import com.pkkl.BreadMeUp.model.Bakery
 import com.pkkl.BreadMeUp.model.Order
 import com.pkkl.BreadMeUp.model.User
+import com.pkkl.BreadMeUp.repositories.BakeryRepository
+import com.pkkl.BreadMeUp.repositories.ClosedDaysRepository
 import com.pkkl.BreadMeUp.repositories.OrderRepository
-
+import com.pkkl.BreadMeUp.repositories.ProductRepository
+import com.pkkl.BreadMeUp.repositories.UserRepository
+import com.pkkl.BreadMeUp.services.OrderServiceImpl
+import com.pkkl.BreadMeUp.services.OrderService
 import spock.lang.Specification
 
 import javax.validation.ConstraintViolation
 import javax.validation.ConstraintViolationException
-
 class OrderServiceTest extends Specification {
 
     private OrderRepository orderRepository = Mock(OrderRepository.class)
+    private ProductRepository productRepository = Mock(ProductRepository.class)
+    private BakeryRepository bakeryRepository = Mock(BakeryRepository.class)
+    private UserRepository userRepository = Mock(UserRepository.class)
+    private ClosedDaysRepository closedDaysRepository = Mock(ClosedDaysRepository.class)
 
     private OrderService orderService;
 
     def setup() {
-        this.orderService = new OrderServiceImpl(this.orderRepository);
+        this.orderService = new OrderServiceImpl(
+                this.orderRepository,
+                this.productRepository,
+                this.bakeryRepository,
+                this.userRepository,
+                this.closedDaysRepository
+        );
     }
 
     def "Should return object when order exists"() {
@@ -39,7 +52,7 @@ class OrderServiceTest extends Specification {
         when:
         orderService.getById(1)
         then:
-        thrown(DatabaseException.class)
+        thrown(NotFoundException.class)
     }
 
     def "Should return object's collection when orders exist"() {
@@ -74,51 +87,6 @@ class OrderServiceTest extends Specification {
         orderRepository.save(_ as Order) >> { p -> throw new RuntimeException("message") }
         when:
         this.orderService.update(order)
-        then:
-        thrown(DatabaseException.class)
-    }
-
-
-    def "Should add return saved object when order has been successfully added"() {
-        given:
-        Order order = Mock(Order.class)
-        and:
-        orderRepository.save(order) >> order
-        when:
-        Order returnedOrder = this.orderService.add(order)
-        then:
-        returnedOrder == order
-    }
-
-    def "Should add throw ConstraintException when repository save throws ConstraintViolationException"() {
-        given:
-        Order order = Mock(Order.class)
-        and:
-        orderRepository.save(_ as Order) >> { o -> throw new ConstraintViolationException(new HashSet<ConstraintViolation<?>>()) }
-        when:
-        this.orderService.add(order)
-        then:
-        thrown(ConstraintException.class)
-    }
-
-    def "Should add throw ConstraintException when repository save throws hibernate ConstraintViolationException"() {
-        given:
-        Order order = Mock(Order.class)
-        and:
-        orderRepository.save(_ as Order) >> { o -> throw new RuntimeException(new org.hibernate.exception.ConstraintViolationException(null, null, null)) }
-        when:
-        this.orderService.add(order)
-        then:
-        thrown(ConstraintException.class)
-    }
-
-    def "Should add throw DatabaseException when repository save throws exception"() {
-        given:
-        Order order = Mock(Order.class)
-        and:
-        orderRepository.save(_ as Order) >> { o -> throw new RuntimeException("message") }
-        when:
-        this.orderService.add(order)
         then:
         thrown(DatabaseException.class)
     }

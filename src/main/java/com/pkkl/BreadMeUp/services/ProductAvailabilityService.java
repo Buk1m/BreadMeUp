@@ -6,6 +6,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import java.time.LocalDate;
 import java.util.List;
 
+
 public interface ProductAvailabilityService {
 
     ProductAvailability getById(int id);

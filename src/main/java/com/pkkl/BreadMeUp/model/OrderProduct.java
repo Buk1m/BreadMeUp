@@ -34,21 +34,13 @@ public class OrderProduct {
     @Min(1)
     private int amount;
 
-    @Enumerated(value = EnumType.STRING)
-    @Column(name = "unit_of_measurement")
-    private UnitOfMeasurement unitOfMeasurement;
-
-    @Column(name = "size", precision = 6, scale = 3)
-    @Min(0)
-    private double size;
-
-    @ManyToOne()
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "order_id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude
     private Order order;
 
-    @ManyToOne()
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "product_id")
     @ToString.Exclude
     @EqualsAndHashCode.Exclude

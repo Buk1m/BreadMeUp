@@ -3,12 +3,14 @@ package com.pkkl.BreadMeUp.dtos;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
-import java.util.Date;
+import java.time.LocalDate;
 import java.util.Set;
 
 @Data
 @AllArgsConstructor
+@NoArgsConstructor
 @Builder
 public class OrderDetailsDto {
 
@@ -18,9 +20,11 @@ public class OrderDetailsDto {
 
     private UserDetailsDto user;
 
-    private Date date;
+    private LocalDate date;
 
-    private Set<OrderProductDetailsDto> orderProducts;
+//    private Set<OrderProductDetailsDto> orderProducts;
 
     private boolean completed;
+
+    private boolean cancelled;
 }

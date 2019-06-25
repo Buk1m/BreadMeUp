@@ -3,6 +3,7 @@ package com.pkkl.BreadMeUp.services;
 import com.pkkl.BreadMeUp.exceptions.ConstraintException;
 import com.pkkl.BreadMeUp.exceptions.DatabaseException;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.validation.ConstraintViolationException;
 
@@ -11,6 +12,7 @@ class BaseService<T, R extends CrudRepository> {
 
     protected R repository;
 
+    @Transactional
     T saveOrUpdate(T item) {
         try {
             return (T) repository.save(item);
