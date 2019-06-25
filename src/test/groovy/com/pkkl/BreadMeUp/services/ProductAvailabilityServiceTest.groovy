@@ -342,4 +342,33 @@ class ProductAvailabilityServiceTest extends Specification {
         then:
         thrown(DatabaseException.class)
     }
+
+    def "Should getAllByProduct return list of product availabilities"() {
+        given:
+        Product product1 = Product.builder().id(1).build()
+        Product product2 = Product.builder().id(2).build()
+        and:
+        ProductAvailability productAvailability1 = ProductAvailability.builder().product(product1).build()
+        ProductAvailability productAvailability2 = ProductAvailability.builder().product(product2).build()
+        ProductAvailability productAvailability3 = ProductAvailability.builder().product(product1).build()
+        and:
+        productAvailabilityRepository.findAll() >> List.of(productAvailability1, productAvailability2, productAvailability3)
+        when:
+        List<ProductAvailability> returnedProductAvailabilities = this.productAvailabilityService
+                .getAllByProduct(1)
+        then:
+        returnedProductAvailabilities.size() == 2
+        returnedProductAvailabilities.contains(productAvailability1)
+        returnedProductAvailabilities.contains(productAvailability3)
+    }
+
+
+    def "Should getAllByProduct throw DatabaseException when repository thrown exception"() {
+        given:
+        productAvailabilityRepository.findAll() >> { throw new RuntimeException() }
+        when:
+        this.productAvailabilityService.getAllByProduct(1)
+        then:
+        thrown(DatabaseException.class)
+    }
 }

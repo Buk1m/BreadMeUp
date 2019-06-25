@@ -2,6 +2,7 @@ package com.pkkl.BreadMeUp.services;
 
 import com.pkkl.BreadMeUp.exceptions.ConstraintException;
 import com.pkkl.BreadMeUp.exceptions.DatabaseException;
+import com.pkkl.BreadMeUp.exceptions.NotFoundException;
 import com.pkkl.BreadMeUp.model.Role;
 import com.pkkl.BreadMeUp.model.User;
 import com.pkkl.BreadMeUp.repositories.RoleRepository;
@@ -9,6 +10,7 @@ import com.pkkl.BreadMeUp.repositories.UserRepository;
 import com.pkkl.BreadMeUp.security.AuthUserDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -29,6 +31,7 @@ public class UserServiceImpl implements UserService {
     private final RoleRepository roleRepository;
 
     private final PasswordEncoder passwordEncoder;
+
 
     @Autowired
     public UserServiceImpl(UserRepository userRepository, RoleRepository roleRepository,
@@ -81,8 +84,14 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void assignBakeryToUser(Integer userId, int bakeryId) {
+        if (userRepository.findById(userId).isEmpty()) {
+            throw new NotFoundException("User does not exist");
+        }
+
         try {
             userRepository.assignBakeryToUser(userId, bakeryId);
+        } catch (DataIntegrityViolationException e) {
+            throw new NotFoundException("Bakery does not exist");
         } catch (Exception e) {
             throw new DatabaseException(e.getMessage(), e);
         }

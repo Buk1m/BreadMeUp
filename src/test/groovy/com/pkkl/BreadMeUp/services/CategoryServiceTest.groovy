@@ -37,4 +37,27 @@ class CategoryServiceTest extends Specification {
         then:
         thrown(DatabaseException.class)
     }
+
+    def "Should return category with given id when call getById"() {
+        given:
+        Category category = Category.builder()
+                .id(1)
+                .build()
+        and:
+        this.categoryRepository.findById(1) >> Optional.of(category)
+        when:
+        Category returnedCategory= this.categoryService.getById(1)
+        then:
+        returnedCategory.getId() == 1
+        returnedCategory == category
+    }
+
+    def "Should getById throw DatabaseException when categoryRepository throws exception"() {
+        given:
+        this.categoryRepository.findById(1) >> { Optional.ofNullable(null) }
+        when:
+        this.categoryService.getById(1)
+        then:
+        thrown(DatabaseException.class)
+    }
 }
