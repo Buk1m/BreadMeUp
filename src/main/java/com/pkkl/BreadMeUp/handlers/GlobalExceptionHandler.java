@@ -1,9 +1,6 @@
 package com.pkkl.BreadMeUp.handlers;
 
-import com.pkkl.BreadMeUp.exceptions.AuthorizationException;
-import com.pkkl.BreadMeUp.exceptions.ConstraintException;
-import com.pkkl.BreadMeUp.exceptions.DatabaseException;
-import com.pkkl.BreadMeUp.exceptions.InvalidRequestDataException;
+import com.pkkl.BreadMeUp.exceptions.*;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,13 +39,18 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(InvalidRequestDataException.class)
-    public ResponseEntity<Object> handleDataConflict(InvalidRequestDataException ex) {
+    public ResponseEntity<Object> handleInvalidRequest(InvalidRequestDataException ex) {
         return this.getObjectResponseEntity(ex, HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(AuthorizationException.class)
-    public ResponseEntity<Object> handleDataConflict(AuthorizationException ex) {
+    public ResponseEntity<Object> handleForbidden(AuthorizationException ex) {
         return this.getObjectResponseEntity(ex, HttpStatus.FORBIDDEN);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<Object> handleForbidden(NotFoundException ex) {
+        return this.getObjectResponseEntity(ex, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(DatabaseException.class)

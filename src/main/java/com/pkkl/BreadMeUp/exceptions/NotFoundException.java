@@ -1,6 +1,6 @@
 package com.pkkl.BreadMeUp.exceptions;
 
-public class NotFoundException extends InvalidRequestDataException {
+public class NotFoundException extends RuntimeException {
 
     public NotFoundException() {
     }
