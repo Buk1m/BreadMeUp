@@ -1,9 +1,6 @@
 package com.pkkl.BreadMeUp.dtos;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.validator.constraints.Length;
 
 import javax.validation.constraints.Min;
@@ -39,6 +36,8 @@ public class ProductDto {
     @NotNull(message = "ProductType cannot be null")
     private ProductTypeDto productType;
 
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
     private List<ProductAvailabilityDto> productAvailability;
 
     private int version;

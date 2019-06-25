@@ -37,4 +37,6 @@ public class ProductAvailabilityDto {
 
     @Min(0)
     private int limit;
+
+    private int version;
 }
