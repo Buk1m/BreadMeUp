@@ -4,6 +4,7 @@ import com.pkkl.BreadMeUp.clients.GoogleMapsClient;
 import com.pkkl.BreadMeUp.dtos.BakeryLocationDto;
 import com.pkkl.BreadMeUp.exceptions.ConstraintException;
 import com.pkkl.BreadMeUp.exceptions.DatabaseException;
+import com.pkkl.BreadMeUp.exceptions.NotFoundException;
 import com.pkkl.BreadMeUp.model.Bakery;
 import com.pkkl.BreadMeUp.repositories.BakeryRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -75,7 +76,7 @@ public class BakeryServiceImpl implements BakeryService {
     public BakeryLocationDto getLocation(int id) {
         try {
             Bakery bakery = this.bakeryRepository.findById(id).orElseThrow(() -> {
-                throw new RuntimeException("Bakery does not exist");
+                throw new NotFoundException("Bakery does not exist");
             });
             return this.googleMapsClient.getGoogle(bakery.getPlaceId(), key);
         } catch (Exception e) {

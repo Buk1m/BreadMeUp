@@ -1,6 +1,7 @@
 package com.pkkl.BreadMeUp.services;
 
 import com.pkkl.BreadMeUp.exceptions.DatabaseException;
+import com.pkkl.BreadMeUp.exceptions.NotFoundException;
 import com.pkkl.BreadMeUp.model.Category;
 import com.pkkl.BreadMeUp.repositories.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,7 +31,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category getById(int id) {
         try {
-            return this.categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Category type doesn't exist"));
+            return this.categoryRepository.findById(id).orElseThrow(() -> new NotFoundException("Category type doesn't exist"));
         } catch (Exception e) {
             throw new DatabaseException(e);
         }

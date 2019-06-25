@@ -48,13 +48,15 @@ public class OrderServiceImpl extends BaseService<Order, OrderRepository> implem
     @Override
     public Order getById(int id) {
         try{
-            return repository.findById(id).orElseThrow(() -> new NotFoundException("Order doesn't exist \\U+1F635"));
+            return repository.findById(id).orElseThrow(() -> new NotFoundException("Order doesn't exist."));
         }
         catch(NotFoundException e){
+            log.error(e.getMessage(), e);
             throw e;
         }
-        catch (Exception ex) {
-            throw new DatabaseException(ex.getMessage(), ex);
+        catch (Exception e) {
+            log.error(e.getMessage(), e);
+            throw new DatabaseException(e.getMessage(), e);
         }
     }
 
@@ -63,13 +65,13 @@ public class OrderServiceImpl extends BaseService<Order, OrderRepository> implem
         try {
             return repository.findAll();
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
             throw new DatabaseException(e.getMessage(), e);
         }
     }
 
     @Override
     public void cancelOrder(int orderId) {
-
         Order order = this.getById(orderId);
         if (order.isCancelled())
             throw new ConstraintException("Order was already cancelled.");
@@ -129,6 +131,7 @@ public class OrderServiceImpl extends BaseService<Order, OrderRepository> implem
                     .filter(o -> o.getBakery().getId() == id)
                     .collect(Collectors.toList());
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
             throw new DatabaseException(e.getMessage(), e);
         }
     }
@@ -187,7 +190,7 @@ public class OrderServiceImpl extends BaseService<Order, OrderRepository> implem
 
 
     private boolean isBakeryClosed(Order order, Bakery bakery) {
-        var closedDays = closedDaysRepository.findAll();
+        List<ClosedDays> closedDays = closedDaysRepository.findAll();
         return closedDays.stream()
                 .anyMatch(c -> c.getBakeries().contains(bakery) && c.getDate().equals(order.getDate()));
     }
@@ -221,11 +224,11 @@ public class OrderServiceImpl extends BaseService<Order, OrderRepository> implem
 
     private Product getProductFromOrderProduct(OrderProduct op) {
         return productRepository.findById(op.getProduct().getId()).orElseThrow(() ->
-                new RuntimeException("Ordered product doesn't exists"));
+                new NotFoundException("Ordered product doesn't exists"));
     }
 
     private Bakery getBakeryByOrder(Order order) {
-        return bakeryRepository.findById(order.getBakery().getId()).orElseThrow(() -> new RuntimeException("Wyjebałem się"));
+        return bakeryRepository.findById(order.getBakery().getId()).orElseThrow(() -> new NotFoundException("Bakery not found."));
     }
 
     @Override
@@ -234,7 +237,7 @@ public class OrderServiceImpl extends BaseService<Order, OrderRepository> implem
     }
 
     private User getUserByPrincipal(Principal principal) {
-        return userRepository.findById(getUserIdFromPrincipal(principal)).orElseThrow(() -> new RuntimeException("User not found."));
+        return userRepository.findById(getUserIdFromPrincipal(principal)).orElseThrow(() -> new NotFoundException("User not found."));
     }
 
     private int getUserIdFromPrincipal(Principal principal) {

@@ -75,7 +75,7 @@ public class UserServiceImpl implements UserService {
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         try {
             User user = this.userRepository.findByLogin(username)
-                    .orElseThrow(RuntimeException::new);
+                    .orElseThrow(NotFoundException::new);
             return new AuthUserDetails(user);
         } catch (Exception e) {
             throw new UsernameNotFoundException("User not exists with login=" + username);

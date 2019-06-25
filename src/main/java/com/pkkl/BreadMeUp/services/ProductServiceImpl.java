@@ -2,6 +2,7 @@ package com.pkkl.BreadMeUp.services;
 
 import com.pkkl.BreadMeUp.exceptions.ConstraintException;
 import com.pkkl.BreadMeUp.exceptions.DatabaseException;
+import com.pkkl.BreadMeUp.exceptions.NotFoundException;
 import com.pkkl.BreadMeUp.model.*;
 import com.pkkl.BreadMeUp.repositories.ProductAvailabilityRepository;
 import com.pkkl.BreadMeUp.repositories.ProductRepository;
@@ -47,7 +48,7 @@ public class ProductServiceImpl implements ProductService {
     @Override
     public Product getById(final int id) {
         try {
-            return productRepository.findById(id).orElseThrow(() -> new RuntimeException("Product doesn't exist \\U+1F635"));
+            return productRepository.findById(id).orElseThrow(() -> new NotFoundException("Product doesn't exist \\U+1F635"));
         } catch (Exception e) {
             throw new DatabaseException(e.getMessage(), e);
         }

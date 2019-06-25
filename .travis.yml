@@ -1,5 +1,8 @@
 language: java
-sudo: false
+sudo: true
+dist: trusty
 install: mvn clean install -Pintegration-test
 jdk:
   - openjdk11
+before_install:
+  - chmod +x mvnw
