@@ -1,7 +1,7 @@
 package com.pkkl.BreadMeUp.services;
 
+import com.pkkl.BreadMeUp.dtos.BakeryLocationDto;
 import com.pkkl.BreadMeUp.model.Bakery;
-import com.pkkl.BreadMeUp.model.Order;
 import org.springframework.security.access.prepost.PreAuthorize;
 
 import java.util.List;
@@ -19,4 +19,6 @@ public interface BakeryService {
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     Bakery add(Bakery bakery);
+
+    BakeryLocationDto getLocation(int id);
 }

@@ -1,26 +1,37 @@
 package com.pkkl.BreadMeUp.services;
 
+import com.pkkl.BreadMeUp.clients.GoogleMapsClient;
+import com.pkkl.BreadMeUp.dtos.BakeryLocationDto;
 import com.pkkl.BreadMeUp.exceptions.ConstraintException;
 import com.pkkl.BreadMeUp.exceptions.DatabaseException;
 import com.pkkl.BreadMeUp.model.Bakery;
 import com.pkkl.BreadMeUp.repositories.BakeryRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.PropertySource;
 import org.springframework.stereotype.Service;
 
 import javax.validation.ConstraintViolationException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 
+@PropertySource("classpath:google.properties")
 @Service
 public class BakeryServiceImpl implements BakeryService {
+
     private final BakeryRepository bakeryRepository;
 
+    private final GoogleMapsClient googleMapsClient;
+
+    @Value("${key}")
+    private String key;
+
     @Autowired
-    public BakeryServiceImpl(BakeryRepository bakeryRepository) {
+    public BakeryServiceImpl(BakeryRepository bakeryRepository, GoogleMapsClient googleMapsClient) {
         this.bakeryRepository = bakeryRepository;
+        this.googleMapsClient = googleMapsClient;
     }
 
     @Override
@@ -58,6 +69,18 @@ public class BakeryServiceImpl implements BakeryService {
     @Override
     public Bakery add(final Bakery bakery) {
         return saveOrUpdate(bakery);
+    }
+
+    @Override
+    public BakeryLocationDto getLocation(int id) {
+        try {
+            Bakery bakery = this.bakeryRepository.findById(id).orElseThrow(() -> {
+                throw new RuntimeException("Bakery does not exist");
+            });
+            return this.googleMapsClient.getGoogle(bakery.getPlaceId(), key);
+        } catch (Exception e) {
+            throw new DatabaseException(e);
+        }
     }
 
     private Bakery saveOrUpdate(final Bakery bakery) {
