@@ -27,7 +27,7 @@ public class SingleProductLoverStrategy implements DiscountStrategy {
         double discountPercentage = 0.0;
 
         Map<Product, Integer> test = order.getOrderProducts().stream().collect(groupingBy(OrderProduct::getProduct, Collectors.summingInt(OrderProduct::getAmount)));
-        for (var productAmount : test.values()) {
+        for (Integer productAmount : test.values()) {
             if (productAmount >= PASTRY_LOVER_THRESHOLD) {
                 discountPercentage += PASTRY_LOVER_DISCOUNT_PERCENTAGE;
             } else if (productAmount >= BIG_FAMILY_THRESHOLD) {

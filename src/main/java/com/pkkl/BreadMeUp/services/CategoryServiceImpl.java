@@ -1,6 +1,7 @@
 package com.pkkl.BreadMeUp.services;
 
 import com.pkkl.BreadMeUp.exceptions.DatabaseException;
+import com.pkkl.BreadMeUp.exceptions.NotFoundException;
 import com.pkkl.BreadMeUp.model.Category;
 import com.pkkl.BreadMeUp.repositories.CategoryRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -34,7 +35,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Override
     public Category getById(int id) {
         try {
-            return this.categoryRepository.findById(id).orElseThrow(() -> new RuntimeException("Category type doesn't exist"));
+            return this.categoryRepository.findById(id).orElseThrow(() -> new NotFoundException("Category type doesn't exist"));
         } catch (Exception e) {
             log.error(e.getMessage(), e);
             throw new DatabaseException(e);

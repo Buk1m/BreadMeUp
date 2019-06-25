@@ -98,7 +98,7 @@ public class OrderController {
     )
     @ResponseStatus(HttpStatus.CREATED)
     public void createOrder(@Valid @RequestBody final OrderCreateDto orderDto, Principal principal) {
-        var orderProducts = orderDto.getOrderProducts().stream()
+        List<OrderProduct> orderProducts = orderDto.getOrderProducts().stream()
                 .map(o -> this.modelMapper.map(o, OrderProduct.class))
                 .collect(Collectors.toList());
 

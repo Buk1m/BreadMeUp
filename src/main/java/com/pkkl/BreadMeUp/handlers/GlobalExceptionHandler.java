@@ -1,6 +1,7 @@
 package com.pkkl.BreadMeUp.handlers;
 
 import com.pkkl.BreadMeUp.exceptions.*;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -14,6 +15,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+@Slf4j
 @ControllerAdvice
 public class GlobalExceptionHandler {
 
@@ -30,6 +32,7 @@ public class GlobalExceptionHandler {
         body.put("status", HttpStatus.BAD_REQUEST);
         body.put("errors", errors);
 
+        log.error(ex.getMessage(), ex);
         return new ResponseEntity<>(body, HttpStatus.BAD_REQUEST);
     }
 
@@ -49,7 +52,7 @@ public class GlobalExceptionHandler {
     }
 
     @ExceptionHandler(NotFoundException.class)
-    public ResponseEntity<Object> handleForbidden(NotFoundException ex) {
+    public ResponseEntity<Object> handleNotFound(NotFoundException ex) {
         return this.getObjectResponseEntity(ex, HttpStatus.NOT_FOUND);
     }
 
@@ -64,6 +67,7 @@ public class GlobalExceptionHandler {
         body.put("status", httpStatus);
         body.put("error", ex.getMessage());
 
+        log.error(ex.getMessage(), ex);
         return new ResponseEntity<>(body, httpStatus);
     }
 }

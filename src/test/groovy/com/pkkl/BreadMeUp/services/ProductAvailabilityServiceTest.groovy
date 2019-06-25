@@ -2,6 +2,7 @@ package com.pkkl.BreadMeUp.services
 
 import com.pkkl.BreadMeUp.exceptions.ConstraintException
 import com.pkkl.BreadMeUp.exceptions.DatabaseException
+import com.pkkl.BreadMeUp.exceptions.NotFoundException
 import com.pkkl.BreadMeUp.model.Product
 import com.pkkl.BreadMeUp.model.ProductAvailability
 import com.pkkl.BreadMeUp.repositories.ProductAvailabilityRepository
@@ -53,7 +54,7 @@ class ProductAvailabilityServiceTest extends Specification {
         when:
         productAvailabilityService.getById(1)
         then:
-        thrown(DatabaseException.class)
+        thrown(NotFoundException.class)
     }
 
     @WithMockUser(roles = "MANAGER")
