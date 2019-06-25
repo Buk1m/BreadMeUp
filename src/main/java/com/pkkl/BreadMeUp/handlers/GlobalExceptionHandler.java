@@ -2,6 +2,7 @@ package com.pkkl.BreadMeUp.handlers;
 
 import com.pkkl.BreadMeUp.exceptions.ConstraintException;
 import com.pkkl.BreadMeUp.exceptions.DatabaseException;
+import com.pkkl.BreadMeUp.exceptions.NotFoundException;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -45,7 +46,12 @@ public class GlobalExceptionHandler {
         return this.getObjectResponseEntity(ex, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
-    private ResponseEntity<Object> getObjectResponseEntity(DatabaseException ex, HttpStatus httpStatus) {
+    @ExceptionHandler(NotFoundException.class)
+    public ResponseEntity<Object> handleNotFoundException(NotFoundException ex){
+        return this.getObjectResponseEntity(ex, HttpStatus.NOT_FOUND);
+    }
+
+    private ResponseEntity<Object> getObjectResponseEntity(Exception ex, HttpStatus httpStatus) {
         Map<String, Object> body = new LinkedHashMap<>();
         body.put("timestamp", new Date());
         body.put("status", httpStatus);

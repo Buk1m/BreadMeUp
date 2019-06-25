@@ -2,10 +2,14 @@ package com.pkkl.BreadMeUp.services
 
 import com.pkkl.BreadMeUp.exceptions.ConstraintException
 import com.pkkl.BreadMeUp.exceptions.DatabaseException
+import com.pkkl.BreadMeUp.exceptions.NotFoundException
+import com.pkkl.BreadMeUp.model.Bakery
 import com.pkkl.BreadMeUp.model.Role
 import com.pkkl.BreadMeUp.model.User
+import com.pkkl.BreadMeUp.repositories.BakeryRepository
 import com.pkkl.BreadMeUp.repositories.RoleRepository
 import com.pkkl.BreadMeUp.repositories.UserRepository
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.dao.InvalidDataAccessApiUsageException
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder
 import org.springframework.security.crypto.password.PasswordEncoder
@@ -220,7 +224,11 @@ class UserServiceTest extends Specification {
         thrown(DatabaseException.class)
     }
 
-    def "Should not throw exception when assign bakery to user method from repository does not throw exception"() {
+    def "Should not throw exception when assign bakery to user and both exist"() {
+        given:
+        User user = Mock(User.class)
+        and:
+        this.userRepositoryMock.findById(0) >> Optional.of(user)
         when:
         this.userService.assignBakeryToUser(0, 0)
         then:
@@ -229,9 +237,38 @@ class UserServiceTest extends Specification {
         notThrown(Exception.class)
     }
 
+    def "Should throw NotFoundException when assign bakery to user and user does not exist"() {
+        given:
+        this.userRepositoryMock.findById(0) >> Optional.ofNullable(null)
+        when:
+        this.userService.assignBakeryToUser(0, 0)
+        then:
+        thrown(NotFoundException.class)
+    }
+
+    def "Should throw NotFoundException when assign bakery to user and bakery does not exist"() {
+        given:
+        User user = Mock(User.class)
+        and:
+        this.userRepositoryMock.findById(0) >> Optional.of(user)
+        and:
+        this.userRepositoryMock.assignBakeryToUser(0,0) >> { _
+            ->
+            throw new DataIntegrityViolationException(null, null)
+        }
+        when:
+        this.userService.assignBakeryToUser(0, 0)
+        then:
+        thrown(NotFoundException.class)
+    }
+
     def "Should throw DatabaseException when assign bakery to user method from repository throws exception"() {
         given:
-        this.userRepositoryMock.assignBakeryToUser(0, 0) >> {
+        User user = Mock(User.class)
+        and:
+        this.userRepositoryMock.findById(0) >> Optional.of(user)
+        and:
+        this.userRepositoryMock.assignBakeryToUser(0, 0) >> { _
             ->
             throw new RuntimeException()
         }

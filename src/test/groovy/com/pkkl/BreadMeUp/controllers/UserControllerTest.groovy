@@ -1,6 +1,7 @@
 package com.pkkl.BreadMeUp.controllers
 
 import com.pkkl.BreadMeUp.exceptions.DatabaseException
+import com.pkkl.BreadMeUp.exceptions.NotFoundException
 import com.pkkl.BreadMeUp.handlers.GlobalExceptionHandler
 import com.pkkl.BreadMeUp.services.UserService
 import com.pkkl.BreadMeUp.services.UserServiceImpl
@@ -95,6 +96,17 @@ class UserControllerTest extends Specification {
         this.userService.assignBakeryToUser(1, 1)
         and:
         results.andExpect(status().isOk())
+    }
+
+    def "Should return 404 response code when bakery service getById throws NotFoundException"() {
+        given:
+        this.userService.assignBakeryToUser(1, 1) >> { i -> throw new NotFoundException() }
+        when:
+        def results = mockMvc.perform(
+                put('/admin/users/1/bakeries/1'))
+                .andDo(print())
+        then:
+        results.andExpect(status().isNotFound())
     }
 
     def "Should return 500 response code when bakery service getById throws DatabaseException"() {
