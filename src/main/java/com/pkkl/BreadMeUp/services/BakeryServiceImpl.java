@@ -39,6 +39,7 @@ public class BakeryServiceImpl implements BakeryService {
         try {
             return bakeryRepository.findById(id).orElseThrow(() -> new RuntimeException("Bakery doesn't exist \\U+1F635"));
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
             throw new DatabaseException(e.getMessage(), e);
         }
     }
@@ -48,6 +49,7 @@ public class BakeryServiceImpl implements BakeryService {
         try {
             return bakeryRepository.findAll();
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
             throw new DatabaseException(e.getMessage(), e);
         }
     }
@@ -57,6 +59,7 @@ public class BakeryServiceImpl implements BakeryService {
         try {
             bakeryRepository.deleteById(id);
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
             throw new DatabaseException(e.getMessage(), e);
         }
     }
@@ -79,6 +82,7 @@ public class BakeryServiceImpl implements BakeryService {
             });
             return this.googleMapsClient.getGoogle(bakery.getPlaceId(), key);
         } catch (Exception e) {
+            log.error(e.getMessage(), e);
             throw new DatabaseException(e);
         }
     }
@@ -87,11 +91,14 @@ public class BakeryServiceImpl implements BakeryService {
         try {
             return bakeryRepository.save(bakery);
         } catch (ConstraintViolationException e) {
+            log.error(e.getMessage(), e);
             throw new ConstraintException(e.getConstraintViolations().toString(), e);
         } catch (Exception e) {
             if (e.getCause() instanceof org.hibernate.exception.ConstraintViolationException) {
+                log.error(e.getMessage(), e);
                 throw new ConstraintException(e.getMessage(), e);
             }
+            log.error(e.getMessage(), e);
             throw new DatabaseException(e.getMessage(), e);
         }
     }
