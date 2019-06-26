@@ -125,7 +125,7 @@ class BakeryControllerTest extends Specification {
         }
         when:
         def results = mockMvc.perform(
-                post('/bakeries')
+                post('/admin/bakeries')
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                         .content(JsonOutput.toJson(bakeryDto)))
                 .andDo(print())
@@ -142,7 +142,7 @@ class BakeryControllerTest extends Specification {
 
         when:
         def results = mockMvc.perform(
-                post('/bakeries')
+                post('/admin/bakeries')
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                         .content(JsonOutput.toJson(bakeryDto)))
                 .andDo(print())
@@ -166,7 +166,7 @@ class BakeryControllerTest extends Specification {
         this.bakeryService.add(_ as Bakery) >> { throw new DatabaseException() }
         when:
         def results = mockMvc.perform(
-                post('/bakeries')
+                post('/admin/bakeries')
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                         .content(JsonOutput.toJson(bakeryDto)))
                 .andDo(print())
@@ -193,7 +193,7 @@ class BakeryControllerTest extends Specification {
         }
         when:
         def results = mockMvc.perform(
-                put('/bakeries/1')
+                put('/admin/bakeries/1')
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                         .content(JsonOutput.toJson(bakeryDto)))
                 .andDo(print())
@@ -210,7 +210,7 @@ class BakeryControllerTest extends Specification {
 
         when:
         def results = mockMvc.perform(
-                put('/bakeries/1')
+                put('/admin/bakeries/1')
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE)
                         .content(JsonOutput.toJson(bakeryDto)))
                 .andDo(print())
@@ -222,7 +222,7 @@ class BakeryControllerTest extends Specification {
     def "Should return 204 when object deleted"() {
         when:
         def results = mockMvc.perform(
-                delete('/bakeries/1')
+                delete('/admin/bakeries/1')
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andDo(print())
         then:
@@ -236,7 +236,7 @@ class BakeryControllerTest extends Specification {
         this.bakeryService.delete(1) >> { _ -> throw new DatabaseException() }
         when:
         def results = mockMvc.perform(
-                delete('/bakeries/1')
+                delete('/admin/bakeries/1')
                         .contentType(MediaType.APPLICATION_JSON_UTF8_VALUE))
                 .andDo(print())
         then:
