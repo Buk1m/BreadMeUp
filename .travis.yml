@@ -1,0 +1,11 @@
+language: java
+sudo: required
+dist: trusty
+install: mvn clean install -Pintegration-test
+jdk:
+  - openjdk11
+before_install:
+  - chmod +x mvnw
+cache:
+  directories:
+    - $HOME/.m2
