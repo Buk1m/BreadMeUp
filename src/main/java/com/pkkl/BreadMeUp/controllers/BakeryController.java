@@ -15,7 +15,6 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/bakeries")
 public class BakeryController {
     private final BakeryService bakeryService;
 
@@ -28,7 +27,7 @@ public class BakeryController {
     }
 
     @GetMapping(
-            value = "/{id}/location",
+            value = "/bakeries/{id}/location",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseStatus(HttpStatus.OK)
@@ -37,7 +36,7 @@ public class BakeryController {
     }
 
     @GetMapping(
-            value = "/{id}",
+            value = "/bakeries/{id}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseStatus(HttpStatus.OK)
@@ -48,7 +47,7 @@ public class BakeryController {
     }
 
     @GetMapping(
-            value = "",
+            value = "/bakeries",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseStatus(HttpStatus.OK)
@@ -59,7 +58,7 @@ public class BakeryController {
     }
 
     @DeleteMapping(
-            value = "/{id}",
+            value = "/admin/bakeries/{id}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE
     )
     @ResponseStatus(HttpStatus.NO_CONTENT)
@@ -68,7 +67,7 @@ public class BakeryController {
     }
 
     @PutMapping(
-            value = "/{id}",
+            value = "/admin/bakeries/{id}",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.OK)
@@ -82,7 +81,7 @@ public class BakeryController {
     }
 
     @PostMapping(
-            value = "",
+            value = "/admin/bakeries",
             produces = MediaType.APPLICATION_JSON_UTF8_VALUE,
             consumes = MediaType.APPLICATION_JSON_UTF8_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
