@@ -1,4 +1,4 @@
 FROM openjdk:11-jdk
-ADD target/BreadMeUp-0.0.1-SNAPSHOT.jar BreadMeUp.jar
+ADD target/BreadMeUp-1.0.0-RELEASE.jar BreadMeUp.jar
 EXPOSE 8080
 ENTRYPOINT ["java", "-jar", "BreadMeUp.jar"]
